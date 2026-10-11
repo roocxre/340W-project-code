@@ -1,0 +1,2 @@
+mat: 1080 segments (540 rest, 540 task), F5 (1080, 19, 5, 6), non-finite 0, empty modes 0.059, 1218 s
+stew: 3552 segments (1776 rest, 1776 task), F5 (3552, 14, 5, 6), non-finite 0, empty modes 0.048, 191 s

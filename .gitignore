@@ -10,6 +10,7 @@ eeg-analysis/cache/
 
 # eeg load datasets
 eeg-load/data/
+eeg-load/cache/
 
 # Python / tooling caches
 __pycache__/

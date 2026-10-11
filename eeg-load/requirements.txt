@@ -1,0 +1,10 @@
+numpy>=2.0
+scipy>=1.13
+scikit-learn>=1.5
+matplotlib>=3.8
+mne>=1.7
+optuna>=3.6
+joblib>=1.4
+asrpy>=0.0.3
+pytest>=8
+numba>=0.60

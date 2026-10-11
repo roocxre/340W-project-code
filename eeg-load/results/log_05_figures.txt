@@ -1,0 +1,8 @@
+wrote fig2_decomposition.png
+wrote fig3_fitness.png
+wrote fig4_mat_ensemble.png
+wrote fig5_stew_ensemble.png
+wrote fig6_mat_boxplots.png
+wrote fig7_stew_boxplots.png
+wrote fig8_topomaps.png
+wrote fig9_tuning.png

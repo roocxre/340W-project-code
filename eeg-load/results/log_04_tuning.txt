@@ -1,0 +1,14 @@
+{'scope': 'overall', 'level': 3, 'bao_iterations': 100, 'n_selected': 30, 'AC': '89.63', 'SE': '90.93', 'SP': '88.33', 'subject_cv_AC': '69.54'}
+{'scope': 'overall', 'level': 5, 'bao_iterations': 25, 'n_selected': 26, 'AC': '88.98', 'SE': '89.26', 'SP': '88.70', 'subject_cv_AC': '70.65'}
+{'scope': 'overall', 'level': 5, 'bao_iterations': 50, 'n_selected': 22, 'AC': '88.70', 'SE': '89.07', 'SP': '88.33', 'subject_cv_AC': '69.35'}
+{'scope': 'overall', 'level': 5, 'bao_iterations': 75, 'n_selected': 23, 'AC': '88.61', 'SE': '89.63', 'SP': '87.59', 'subject_cv_AC': '70.00'}
+{'scope': 'overall', 'level': 5, 'bao_iterations': 100, 'n_selected': 25, 'AC': '88.33', 'SE': '88.52', 'SP': '88.15', 'subject_cv_AC': '68.70'}
+{'scope': 'overall', 'level': 7, 'bao_iterations': 100, 'n_selected': 18, 'AC': '82.31', 'SE': '83.15', 'SP': '81.48', 'subject_cv_AC': '67.87'}
+{'scope': 'overall', 'level': 9, 'bao_iterations': 100, 'n_selected': 109, 'AC': '86.76', 'SE': '88.33', 'SP': '85.19', 'subject_cv_AC': '71.30'}
+{'scope': 'leadwise', 'level': 3, 'bao_iterations': 100, 'n_selected': 8, 'AC': '65.65', 'SE': '64.63', 'SP': '66.67', 'subject_cv_AC': '63.43'}
+{'scope': 'leadwise', 'level': 5, 'bao_iterations': 25, 'n_selected': 5, 'AC': '64.35', 'SE': '60.93', 'SP': '67.78', 'subject_cv_AC': '62.59'}
+{'scope': 'leadwise', 'level': 5, 'bao_iterations': 50, 'n_selected': 6, 'AC': '64.63', 'SE': '64.26', 'SP': '65.00', 'subject_cv_AC': '62.41'}
+{'scope': 'leadwise', 'level': 5, 'bao_iterations': 75, 'n_selected': 6, 'AC': '64.63', 'SE': '64.26', 'SP': '65.00', 'subject_cv_AC': '62.41'}
+{'scope': 'leadwise', 'level': 5, 'bao_iterations': 100, 'n_selected': 6, 'AC': '64.63', 'SE': '64.26', 'SP': '65.00', 'subject_cv_AC': '62.41'}
+{'scope': 'leadwise', 'level': 7, 'bao_iterations': 100, 'n_selected': 9, 'AC': '64.63', 'SE': '62.22', 'SP': '67.04', 'subject_cv_AC': '64.26'}
+{'scope': 'leadwise', 'level': 9, 'bao_iterations': 100, 'n_selected': 8, 'AC': '65.28', 'SE': '63.89', 'SP': '66.67', 'subject_cv_AC': '63.33'}

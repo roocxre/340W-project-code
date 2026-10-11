@@ -1,0 +1,58 @@
+{
+ "selected": [
+  "Fp1_M1_FE",
+  "Fp1_M1_DE",
+  "Fp1_M3_DE",
+  "Fp2_M1_FE",
+  "Fp2_M2_RE",
+  "Fp2_M4_PSD",
+  "F3_M3_DE",
+  "F4_M1_RE",
+  "F4_M4_PSD",
+  "F7_M1_FE",
+  "F7_M4_PSD",
+  "F8_M1_FE",
+  "T3_M1_DE",
+  "T3_M4_PSD",
+  "T4_M1_FE",
+  "T5_M1_PSD",
+  "T5_M1_FE",
+  "T5_M4_FE",
+  "T6_M2_PSD",
+  "P4_M1_FE",
+  "O1_M2_DE",
+  "O1_M5_PSD",
+  "O2_M1_RE",
+  "O2_M2_DE",
+  "Pz_M4_PSD"
+ ],
+ "params": {
+  "tree": {
+   "max_splits": 181,
+   "criterion": "entropy"
+  },
+  "discriminant": {
+   "kind": "linear"
+  },
+  "naive_bayes": {
+   "distribution": "kernel",
+   "kernel": "triangle"
+  },
+  "knn": {
+   "k": 5,
+   "metric": "cityblock",
+   "weight": "equal"
+  },
+  "svm": {
+   "kernel": "gaussian",
+   "C": 3.1245190375353187,
+   "kernel_scale": 2.202347617457405
+  },
+  "ensemble": {
+   "method": "AdaBoost",
+   "n_learners": 228,
+   "max_splits": 25,
+   "learning_rate": 0.22902671831743956
+  }
+ }
+}

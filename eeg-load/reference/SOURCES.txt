@@ -1,0 +1,5 @@
+rlmd/lmd_public.m, lmd_demo.m, license.txt
+    Robust Local Mean Decomposition (RLMD), Zhiliang Liu, Deng Pan, Yaqiang Jin.
+    MATLAB Central File Exchange 66935, version 3 (BSD licence, see license.txt).
+    https://www.mathworks.com/matlabcentral/fileexchange/66935-robust-local-mean-decomposition-rlmd
+    Downloaded 2026-10-11. Ported to loadrepro/rlmd.py.
