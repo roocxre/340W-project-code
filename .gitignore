@@ -8,6 +8,9 @@ gait/analysis/dataset/
 eeg-analysis/Cleaned Data/
 eeg-analysis/cache/
 
+# eeg load datasets
+eeg-load/data/
+
 # Python / tooling caches
 __pycache__/
 *.pyc
