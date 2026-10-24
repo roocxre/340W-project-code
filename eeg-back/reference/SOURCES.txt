@@ -1,0 +1,10 @@
+EEGCWLD/: https://github.com/fariya17/EEGCWLD @ d2abbb72c44d35254bebb89e16cd36a02d660088 (MIT, 2026-02-22)
+    beam_topography.py, correlation_analysis.py, psd_analysis.py, README.md, LICENSE, requirements.txt
+    copied unmodified; loaded by backrepro/released.py, which restores np.trapz (removed in NumPy 2.4).
+    The repository is a function library with no driver scripts, data paths or figure code.
+Paper: Shafi et al., "A Multitasking EEG Dataset for Cognitive Workload Assessment with Controlled
+    Task Difficulty", Scientific Data (2026), doi:10.1038/s41597-026-07607-3 (CC BY-NC-ND 4.0).
+    docs/s41597-026-07607-3_reference.pdf is the accelerated article preview, fetched 2026-10-22.
+Data: iNCog-EEG, figshare doi:10.6084/m9.figshare.30003127.v2 (CC BY 4.0), file 57484816,
+    "iNCog-EEG (ideal vs. Noisy Cognitive EEG for Workload Assessment) Dataset.zip",
+    67,184,109 bytes, md5 57f1a25c79e585bb400fa756c115fa11 (identical to v1). Unzipped into data/iNCog-EEG/.

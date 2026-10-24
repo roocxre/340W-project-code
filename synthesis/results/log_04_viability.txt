@@ -1,0 +1,86 @@
+
+## Dimensions
+
+rows 26137, columns 282 (22 metadata + 260 features)
+subjects 55 (shin 26, cog 29)
+file size 65 MB
+
+windows by dataset x n
+n           0     1     2     3    All
+dataset                               
+cog      6354  6354  6354     0  19062
+shin     2359     0  2358  2358   7075
+All      8713  6354  8712  2358  26137
+
+subjects by dataset x n
+n           0     1     2     3
+dataset                        
+cog      29.0  29.0  29.0   NaN
+shin     26.0   NaN  26.0  26.0
+
+minutes of task EEG by dataset x n
+n            0      1      2      3
+dataset                            
+cog      424.0  424.0  424.0    0.0
+shin     157.0    0.0  157.0  157.0
+
+windows per subject: median 648.0 | shin 270.0 | cog 648.0
+
+## Quality
+
+artifact windows (peak-to-peak > 150 µV):
+         sum   mean
+dataset            
+cog      787  0.041
+shin     355  0.050
+
+artifact rate by subject: max 0.522 | subjects > 20 %: cog-13, shin-VP004
+
+preprocessing per session (mean):
+         n_bad_channels  n_ica  n_ica_removed  n_ica_eye  n_ica_muscle  n_ica_heart
+dataset                                                                            
+cog                0.11  61.57           7.80       1.98          5.83         0.00
+shin               0.00  27.00           4.62       2.08          2.53         0.01
+
+Shin |r(Fp1/Fp2, VEOG)| before ICA 0.92, after 0.15
+interrupted COG sessions in table: 8 (6.8% of rows)
+
+## Behaviour by n (block level)
+
+           block_accuracy  block_mean_rt_s
+dataset n                                 
+cog     0           0.990            0.409
+        1           0.985            0.462
+        2           0.885            0.610
+shin    0           0.990            0.362
+        2           0.917            0.781
+        3           0.832            0.845
+
+## Spectral effect of n (per-subject means, Pz and frontal F1/F2/AFz)
+
+shin alpha 2 vs 0: mean Δlog10 -0.211, lower in 25/26, Wilcoxon p = 2.1e-07
+shin theta 2 vs 0: mean Δlog10 +0.062, lower in 7/26, Wilcoxon p = 0.0039
+shin alpha 3 vs 0: mean Δlog10 -0.220, lower in 25/26, Wilcoxon p = 1.5e-07
+shin theta 3 vs 0: mean Δlog10 +0.042, lower in 7/26, Wilcoxon p = 0.016
+cog alpha 1 vs 0: mean Δlog10 -0.023, lower in 21/29, Wilcoxon p = 0.027
+cog theta 1 vs 0: mean Δlog10 +0.019, lower in 9/29, Wilcoxon p = 0.0071
+cog alpha 2 vs 0: mean Δlog10 -0.124, lower in 27/29, Wilcoxon p = 2.4e-05
+cog theta 2 vs 0: mean Δlog10 +0.054, lower in 5/29, Wilcoxon p = 0.00035
+
+## Baselines (subject-wise CV)
+
+Shin 0/2/3, 10-fold by subject                        47.6 % ±  6.0 (chance 33 %), subjects above chance 26/26
+COG-BCI 0/1/2, 10-fold by subject                     46.5 % ±  9.0 (chance 33 %), subjects above chance 28/29
+Pooled 0 vs 2, 10-fold by subject (all)               69.7 % ±  9.2 (chance 50 %), subjects above chance 53/55
+  of which shin test subjects                         68.2 % ±  8.8 (chance 50 %), subjects above chance 25/26
+  of which cog test subjects                          71.0 % ±  9.5 (chance 50 %), subjects above chance 28/29
+Cross-dataset 0 vs 2: train Shin, test COG-BCI        65.3 % ±  8.5 (chance 50 %), subjects above chance 28/29
+Cross-dataset 0 vs 2: train COG-BCI, test Shin        63.9 % ±  6.9 (chance 50 %), subjects above chance 26/26
+Pooled low vs high (Shin 0/3, COG 0/2), 10-fold       70.2 % ±  9.6 (chance 50 %), subjects above chance 53/55
+Pooled all levels 0/1/2/3 as 4 classes, 10-fold       43.4 % ±  8.1 (chance 33 %), subjects above chance 51/55
+
+## Dataset identity (domain shift)
+
+dataset decodable from raw features (subject-wise CV): 91.2 % (majority 73.1 %)
+dataset decodable after within-subject z-scoring, all levels: 73.1 % (majority 73.1 %)
+dataset decodable after within-subject z-scoring, shared levels 0 and 2 only: 73.0 % (majority 73.0 %)

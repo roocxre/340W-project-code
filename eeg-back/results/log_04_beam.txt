@@ -1,0 +1,21 @@
+clean Theta W : 7.4-10.9 µV²/Hz, max at T3
+clean Theta NW: 7.5-11.2 µV²/Hz, max at F4
+clean Alpha W : 3.3-4.0 µV²/Hz, max at F3
+clean Alpha NW: 6.0-7.6 µV²/Hz, max at F7
+noisy Theta W : 5.1-6.9 µV²/Hz, max at Fp2
+noisy Theta NW: 7.4-12.1 µV²/Hz, max at F4
+noisy Alpha W : 2.4-2.8 µV²/Hz, max at T5
+noisy Alpha NW: 6.4-7.5 µV²/Hz, max at F4
+paper colorbars: clean Theta 1.0-14.3, clean Alpha 0.8-11.6, noisy Theta 0.4-5.8, noisy Alpha 1.0-15.5
+Fig. 8 maps vs every recording, Spearman rho at 16 electrodes (null: best of 160 shuffled maps):
+  clean Theta W : best sub26_mw rho 0.65, next sub11_mw 0.62; null best median 0.66; best match is the panel's own group and condition
+  clean Theta NW: best sub26_nw rho 0.77, next sub34_mw 0.62; null best median 0.63; best match is the panel's own group and condition
+  clean Alpha W : best sub06_hw rho 0.78, next sub33_nw 0.59; null best median 0.65; best match is the panel's own group and condition
+  clean Alpha NW: best sub01_nw rho 0.71, next sub39_mw 0.71; null best median 0.63; best match is the panel's own group and condition
+  noisy Theta W : best sub12_hw rho 0.64, next sub21_nw 0.62; null best median 0.66; best match is not the panel's own group and condition
+  noisy Theta NW: best sub26_nw rho 0.74, next sub05_lw 0.65; null best median 0.64; best match is not the panel's own group and condition
+  noisy Alpha W : best sub16_mw rho 0.74, next sub32_nw 0.65; null best median 0.67; best match is not the panel's own group and condition
+  noisy Alpha NW: best sub06_hw rho 0.78, next sub26_mw 0.56; null best median 0.64; best match is not the panel's own group and condition
+clean (n=30): frontal theta W > NW in 15/30, median W/NW 1.03, Wilcoxon p = 0.465 | posterior alpha NW > W in 19/30, median NW/W 1.20, p = 0.040
+noisy (n=10): frontal theta W > NW in 2/10, median W/NW 0.66, Wilcoxon p = 0.020 | posterior alpha NW > W in 6/10, median NW/W 1.58, p = 0.084
+all   (n=40): frontal theta W > NW in 17/40, median W/NW 0.94, Wilcoxon p = 0.618 | posterior alpha NW > W in 25/40, median NW/W 1.23, p = 0.004

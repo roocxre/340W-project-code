@@ -1,0 +1,7 @@
+Fig. 7 digitised: mean colour error 0.0056 (clean), 0.0059 (noisy) on a 0-1.7 RGB scale
+  'clean' panel: best sub07_nw (RMSE 0.008, r 0.999); runner-up sub04_hw (RMSE 0.075, r 0.822)
+  'noisy' panel: best sub07_hw (RMSE 0.008, r 0.999); runner-up sub30_mw (RMSE 0.078, r 0.831)
+  -> 'clean' = sub07_nw, 'noisy' = sub07_hw: both from clean subject 07; the figure is rest vs high workload, not clean vs noisy
+no-workload mean off-diagonal r: clean subjects median 0.213, noisy 0.168, Mann-Whitney p = 0.06
+  group-mean matrices, clean - noisy: off-diagonal range -0.012 to +0.114 (paper's example pair: about -0.27 to +0.53)
+  mean r by condition, all 40 subjects: nw 0.205, lw 0.206, mw 0.211, hw 0.217

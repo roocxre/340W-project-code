@@ -1,0 +1,10 @@
+numpy
+scipy
+pandas
+mne
+mne-icalabel
+onnxruntime
+python-picard
+scikit-learn
+pytest
+mat-io

@@ -1,0 +1,9 @@
+paper: F(2, 58) = 4.21, p = 0.02; post-hoc lw-mw 0.12, lw-hw 0.02, mw-hw 0.19; lw < mw < hw
+primary (BEAM theta, six frontal leads, linear): F(2, 58) = 0.27, p = 0.76; post-hoc lw-mw 0.51, lw-hw 0.91, mw-hw 0.49; means 9.82 / 10.54 / 9.66 µV²/Hz (<>)
+all 30 variants: F 0.04-2.46, smallest p 0.094, 0 with p < 0.05, 1 monotonic increasing; order counts {'<>': 28, 'lw<mw<hw': 1, '>>': 1}
+     channels measure  scale     F     p  p_lw_mw  p_lw_hw  p_mw_hw order
+        F3 F4     rel  log10 2.463 0.094    0.576    0.133    0.035    <>
+        F3 F4     rel linear 2.341 0.105    0.534    0.145    0.035    <>
+Fp1 Fp2 F3 F4     rel linear 2.326 0.107    0.693    0.074    0.047    <>
+Fp1 Fp2 F3 F4    beam  log10 2.325 0.107    0.084    0.612    0.058    <>
+Fp1 Fp2 F3 F4     rel  log10 2.155 0.125    0.844    0.065    0.072    <>

@@ -1,0 +1,7 @@
+theta mean over shared ch: 2-back vs 0: -0.036 (11/26 lower, p=0.842); 3 vs 0: -0.096 (14/26 lower, p=0.237)
+alpha mean over shared ch: 2-back vs 0: -0.346 (24/26 lower, p=4.17e-07); 3 vs 0: -0.366 (23/26 lower, p=7.45e-07)
+beta  mean over shared ch: 2-back vs 0: -0.068 (19/26 lower, p=0.00561); 3 vs 0: -0.070 (19/26 lower, p=0.00938)
+LOSO 0/2/3: 58.5% (chance 33%), subjects above chance 26/26
+LOSO 0 vs 2: 80.1% (chance 50%), subjects above chance 25/26
+LOSO 2 vs 3: 59.8% (chance 50%), subjects above chance 21/26
+mean series index by n: {0: np.float64(13.0), 2: np.float64(13.0), 3: np.float64(13.0)}

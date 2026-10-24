@@ -1,0 +1,18 @@
+Fig. 5 search over 40 subjects: compute_psd_mne matches [2], compute_psd_welch matches []
+sub02, Fp1-A1, compute_psd_mne n_fft 2048 (paper in brackets):
+  nw: peak 10.16 Hz [10.16], ratio 1.00 [1.0]
+  lw: peak 1.37 Hz [1.37], ratio 0.42 [0.42]
+  mw: peak 2.54 Hz [2.54], ratio 0.75 [0.75]
+  hw: peak 2.34 Hz [2.34], ratio 1.49 [1.49]
+all 30 clean subjects, power relative to own nw (median [IQR], subjects below 1):
+  lw: 0.83 [0.68-1.03], 22/30 below 1
+  mw: 1.03 [0.76-1.36], 14/30 below 1
+  hw: 0.78 [0.65-1.24], 18/30 below 1
+  nw peak in the alpha band (8-13 Hz) in 5/30; lw < mw < hw ordering in 5/30 (1/6 = 5 expected by chance)
+  grand mean of 30 clean subjects: nw peak 1.86 Hz ratio 1.00, lw peak 1.95 Hz ratio 0.92, mw peak 2.54 Hz ratio 1.17, hw peak 2.05 Hz ratio 0.94
+Fig. 6 search, n_fft 4096, all 25440 ordered pairs: 0 exact matches
+  nearest with both peaks right: clean sub06_lw / noisy sub23_mw: ratio 2.14
+  nearest with both peaks right: clean sub31_lw / noisy sub23_mw: ratio 1.92
+  nearest with both peaks right: clean sub06_lw / noisy sub24_hw: ratio 1.36
+  record 276 (docstring 'Clean_276.EDF') = sub31_lw: peak 2.15 Hz [Fig. 6 clean 2.15]; record 256 ('Noisy_256.EDF') is not released
+  group means, all conditions: noisy/clean mean power 0.73 [paper's example pair: 4.01]

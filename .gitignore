@@ -23,3 +23,9 @@ venv/
 
 # claude artifacts
 eeg-analysis/PLAN.md
+# eeg back datasets
+eeg-back/data/
+
+# synthesis datasets and caches
+synthesis/data/
+synthesis/cache/

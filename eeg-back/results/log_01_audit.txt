@@ -1,0 +1,27 @@
+160 files, 40 subjects, 4 conditions each
+length: 53-93 s, median 53 s (paper: 5 min per condition, 'approximately 1 minute' saved)
+  longer than 54 s: sub09_nw (55 s), sub11_nw (93 s), sub21_lw (56 s), sub23_nw (57 s), sub25_lw (55 s), sub31_mw (55 s), sub37_nw (55 s)
+header declares 90-158 s; declared == stored in 0 of 160 files
+header start time is 01.04.1311.12.13 in 160 of 160 files (device default)
+device record number (EDF patient field): 18-368, strictly increasing in subject then nw<lw<mw<hw order
+  gap to next record: median 2, largest 20 (between records 239 and 259)
+  released code's docstring example Clean_276.EDF: record 276 is sub31_lw (noisy in the release)
+  released code's docstring example Noisy_256.EDF: record 256 is not in the release
+Add_lead1-16: median SD 13.6 µV (EEG 13.5 µV), max |r| with own EEG median 0.43, max 0.83; undocumented, excluded as in the paper's figures
+mean spectrum, dB re 1 µV²/Hz (clean / noisy):
+  0.2 Hz 9.6/10.5  0.5 Hz 13.2/13.7  2 Hz 18.4/17.4  10 Hz 7.8/6.8  30 Hz -4.1/-6.0  35 Hz -10.7/-12.2  40 Hz -16.9/-17.9  50 Hz -18.9/-19.9
+  drop 30->40 Hz: 12.8 dB; 50 Hz line peak above 45-55 Hz floor: 0.0 dB
+  -> the KT88 recorded through a ~0.5 Hz high-pass and a ~35 Hz low-pass, with no line noise left
+artifact measures, per subject (mean over conditions), clean vs noisy, Mann-Whitney:
+  sd_uV            clean median     13.2  noisy median       14  p = 0.77  (noisy > clean in 53% of pairs)
+  p99_abs_uV       clean median     45.8  noisy median     49.6  p = 0.94  (noisy > clean in 49% of pairs)
+  frac_over_100uV  clean median  0.00202  noisy median  0.00121  p = 0.05  (noisy > clean in 29% of pairs)
+  delta_dB         clean median     15.3  noisy median       16  p = 0.72  (noisy > clean in 54% of pairs)
+  beta_dB          clean median    0.604  noisy median    -1.05  p = 0.03  (noisy > clean in 26% of pairs)
+  highest 99th-percentile amplitude: sub10 (clean, 126 µV), sub09 (clean, 102 µV), sub20 (clean, 81 µV), sub22 (clean, 80 µV), sub17 (clean, 79 µV), sub19 (clean, 71 µV), sub11 (clean, 70 µV), sub18 (clean, 65 µV)
+separability, 2 s log spectra:
+  subject identity, 5-NN: 16.0 % (chance 2.5 %); recording identity: 4.6 % (chance 0.6 %)
+  within-subject lw/mw/hw, logistic regression: median 33 % (range 18-64 %, chance 33 %)
+  second half of a file best matches its own first half in 14 % of files
+  inter-channel r (1-30 Hz): Fp1-Fp2 median 0.31; same reference ear 0.23, opposite ears 0.14
+duplicate search: largest median lagged |r| between two files 0.36 (sub09_lw vs sub10_mw); median of per-file maxima 0.21 -> no duplicated recordings
