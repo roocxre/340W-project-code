@@ -21,7 +21,10 @@ import numpy as np
 import scipy.io as sio
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "Cleaned Data"
+# "Cleaned Data/" lost its DSR and WG files to an unrelated trim-down (kept only
+# nback for a separate synthesis pipeline); "Cleaned Data Old/" is a complete,
+# independent re-download (EEG_01-26_MATLAB.zip) and is what this package reads.
+DATA_DIR = ROOT / "Cleaned Data Old"
 BEHAVIOR_DIR = ROOT / "behavior"
 CACHE_DIR = ROOT / "cache"
 RESULTS_DIR = ROOT / "results"

@@ -8,3 +8,5 @@ python-picard
 scikit-learn
 pytest
 mat-io
+numba
+joblib

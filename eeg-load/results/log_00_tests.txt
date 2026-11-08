@@ -1,0 +1,9 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/roo/vscode/340W/cognitive-data-analysis/eeg-load
+plugins: platformdirs-4.13.0
+collected 7 items
+
+tests/test_rlmd.py .......                                               [100%]
+
+============================== 7 passed in 4.21s ===============================

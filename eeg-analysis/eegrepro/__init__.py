@@ -2,7 +2,7 @@
 
 Modules
 -------
-data     loading `Cleaned Data/` (.mat), markers, session boundaries, behaviour
+data     loading `Cleaned Data Old/` (.mat), markers, session boundaries, behaviour
 filters  zero-phase Butterworth filtering (per recording session)
 aar      port of the AAR toolbox ocular-artifact removal (iWASOBI + eog_fd)
 bbci     ports of the BBCI toolbox functions used by the authors

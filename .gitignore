@@ -6,6 +6,7 @@ gait/analysis/dataset/
 
 # eeg analysis datasets
 eeg-analysis/Cleaned Data/
+eeg-analysis/Cleaned Data Old/
 eeg-analysis/cache/
 
 # eeg load datasets

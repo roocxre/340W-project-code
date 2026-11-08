@@ -16,7 +16,7 @@ The MATLAB functions the analysis depends on were ported to Python from their so
 
 ### Data facts
 
-- **The data is not cleaned.** `Cleaned Data/` is the raw recording converted to MATLAB and downsampled to 200 Hz. All filtering and cleaning happens in the analysis.
+- **The data is not cleaned.** `Cleaned Data Old/` is the raw recording converted to MATLAB and downsampled to 200 Hz. All filtering and cleaning happens in the analysis.
 - **Channels:** 28 EEG channels, plus HEOG and VEOG. Marker times are in milliseconds.
 - **Sessions:** each file holds 3 sessions concatenated. Every session's first marker is exactly 30 s after the session start, which is how the boundaries are recovered.
 - **Behavior:** the authors' `behavior.zip` is unzipped into [behavior/](behavior/). It lines up with the EEG markers for all 14,040 n-back and 9,360 DSR trials, and it is used to keep correct trials only, as the paper does.
@@ -71,7 +71,9 @@ Stage 1 writes about 2.8 GB to `cache/` (git-ignored); later stages read it. A f
 
 ## Data
 
-Place the MATLAB-format EEG data (`VP001-EEG` … `VP026-EEG`) in `Cleaned Data/`. It is available from the dataset page, http://doc.ml.tu-berlin.de/simultaneous_EEG_NIRS/.
+Place the MATLAB-format EEG data (`VP001-EEG` … `VP026-EEG`) in `Cleaned Data Old/`. It is available as a single zip from the dataset page, http://doc.ml.tu-berlin.de/simultaneous_EEG_NIRS/ ("EEG, all 26 participants", `EEG/EEG_01-26_MATLAB.zip`, 5.67 GB).
+
+Note the name: a separate, unrelated synthesis pipeline trims `Cleaned Data/` down to n-back only, so this package reads from `Cleaned Data Old/`, a complete and independent copy, instead. Both directories are git-ignored.
 
 ## Licenses
 

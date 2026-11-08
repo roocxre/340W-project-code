@@ -1,0 +1,16 @@
+windows 3300 (55 subjects x 2 levels x up to 30); chance 50 %
+                                features  pooled_cv   sd above_chance  shin_to_cog  cog_to_shin
+                        band power (260)       69.2 10.7        52/55         63.3         63.8
+                     R-LMD 3-level (468)       67.6 10.4        51/55         64.0         63.5
+              R-LMD 5-level, paper (780)       67.0  8.7        53/55         64.3         62.3
+R-LMD 5-level, modes 1-2 entropies (156)       69.6 10.2        53/55         66.5         65.4
+        band power + R-LMD 3-level (728)       68.3  9.4        53/55         63.9         64.0
+
+mean |2-back - 0-back| per R-LMD feature (within-subject SD units, averaged over channels)
+    skew  kurt   psd  fuzzy  renyi  diffent
+M1  0.04  0.10  0.40   0.18   0.40     0.42
+M2  0.03  0.07  0.06   0.11   0.07     0.07
+M3  0.03  0.04  0.04   0.06   0.03     0.03
+M4  0.03  0.03  0.03   0.05   0.03     0.03
+M5  0.03  0.03  0.04   0.03   0.04     0.04
+exit 0

@@ -56,6 +56,24 @@ Logistic regression on the 260 features, z-scored within each subject, artifact 
 - **Drop or down-weight `artifact == True`**, and decide whether to keep the 8 interrupted COG-BCI sessions (6.8 % of rows).
 - **Weight samples by subject**, so COG-BCI does not dominate.
 
+### R-LMD features (pilot)
+
+R-LMD is the decomposition behind Yedukondalu et al.'s features ([eeg-load/](../eeg-load/)). The pilot ran eeg-load's port on 30 clean windows per level per subject (0 vs 2, 3,300 windows), under the same protocol as above ([results/log_05_rlmd_pilot.txt](results/log_05_rlmd_pilot.txt)).
+
+| Features | Pooled CV | Train Shin → test COG-BCI | Train COG-BCI → test Shin |
+|---|---|---|---|
+| Band power (260) | 69.2 % | 63.3 % | 63.8 % |
+| R-LMD 5-level, as in the paper (780) | 67.0 % | 64.3 % | 62.3 % |
+| R-LMD 3-level (468) | 67.6 % | 64.0 % | 63.5 % |
+| R-LMD modes 1–2, three entropies (156) | 69.6 % | 66.5 % | 65.4 % |
+| Band power + R-LMD 3-level (728) | 68.3 % | 63.9 % | 64.0 % |
+
+- **R-LMD matches band power but adds nothing to it.** All sets are within ~2 points, against a standard error of about 1.4. Combining them does not help, so the information overlaps.
+- **The effect lives in mode 1's power-like features.** Mode 1 PSD, Renyi entropy and differential entropy (a log-variance) differ by about 0.4 within-subject SD between 0- and 2-back. Fuzzy entropy differs by 0.18. Modes 3–5 sit at the noise floor (≈ 0.03).
+- **Most of the paper's modes are empty here.** On 1–40 Hz data at 200 Hz, mode 1 centres at 16–21 Hz, mode 2 at ~3.5 Hz and modes 3–5 at 0.5–1 Hz, below the high-pass. Alpha, which carries the load effect, falls inside mode 1 with beta.
+- **R-LMD needs cleaned input.** On raw COG-BCI data, mode 1 is the 50 Hz mains (85–99 % of variance) and the EEG is left with about 1 %. With only a high-pass and notch, mode 1 becomes muscle-band activity (37–43 Hz) and slow ocular drift dominates mode 3.
+- **Cost.** About 29 ms per channel-window for the decomposition and six features, so roughly 45 minutes for the whole table on 8 cores.
+
 ### Known weak spots
 
 - **Residual ocular activity in two subjects.** In shin-VP004 (artifact rate 52 %) and cog-13 session 2 (59 %), ICLabel did not rate the eye components above the 0.9 removal threshold. Both are captured by `artifact`. Lowering the threshold to 0.8 and rerunning stage 2 (~1 h) is the fix if they matter.
@@ -103,6 +121,7 @@ Bands: delta 1–4, theta 4–8, alpha 8–13, beta 13–30, gamma 30–40 Hz. C
 | 2 | `02_harmonize.py` | Per session: harmonize (below), cut windows, write `cache/windows/<subject>.npz` |
 | 3 | `03_table.py` | Spectral features, notebook metadata, artifact flag → `nback_features.csv`, plus `preprocessing_qa.csv` |
 | 4 | `04_viability.py` | Dimensions, quality, behavior, spectral effects, baselines, dataset identity |
+| 5 | `05_rlmd_pilot.py` | Pilot of Yedukondalu et al.'s R-LMD features (eeg-load's port) against band power on the same windows |
 
 ### Harmonization ([nbackjoin/preprocess.py](nbackjoin/preprocess.py))
 
