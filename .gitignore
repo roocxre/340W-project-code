@@ -30,3 +30,8 @@ eeg-back/data/
 # synthesis datasets and caches
 synthesis/data/
 synthesis/cache/
+
+# downstream analysis
+technique_comparison.html
+technique_comparison.md
+analysis/data/

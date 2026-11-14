@@ -1,0 +1,145 @@
+---
+title: "Machine Learning for Working Memory Load Classification"
+author: "Andrew Mason"
+format: 
+  pdf:
+    fig-width: 6
+    fig-height: 4
+    fig-pos: 'H'
+    fig-align: center
+    geometry:
+      - margin=1in
+    include-in-header:
+      text: |
+        \usepackage{etoolbox}
+        \AtBeginEnvironment{tabular}{\hyphenpenalty=10000\exhyphenpenalty=10000\raggedright}
+editor: visual
+# bibliography: docs/references.bib
+nocite: |
+  @*
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE, 
+  warning = FALSE, 
+  results = 'asis' 
+)
+```
+
+# Abstract
+
+Working memory load in humans is readily conveyed through EEG sensor data, which provides the excellent temporal resolution needed for accurate data analysis. We use working memory as defined by the n-back experiment, which correlates working memory demand with the variable n, run in tandem with EEG sensor measurements, which provide the necessary features for our data analysis. We aggregate several datasets into one based on the similarity of their measurement methods, lack of disparate columns, and experiment paradigm to create a large dataset capable of supporting machine learning workflows. We conduct exploratory data analysis on this resulting data, extract key features for use in classification, and complete additional cleaning and optimization steps. We deploy a suite of feature-based classifiers to infer working memory demand from this EEG data, comparing model performance to each other and to the performance of models in existing studies. We further verify this performance with the use of several evaluation techniques, most importantly confusion matrices and ROC curves, which provide the necessary insights into real model performance on unseen data. We aggregate these results into a systematic report and answer our two research questions: can machine learning be implemented to classify different levels of working memory demand using EEG measurements, and can a comparable model performance be derived from classifying working memory levels, against only classifying the use of working memory entirely? 
+
+# Introduction
+
+Through the review of several previous studies on the study of EEG signals to derive classifications and predictions, EEG has been found to offer rich feature sets to inform many types of inferences. This is a promising concept in the topic of machine learning applied to human cognition, in which one of the main challenges is finding ways to measure human cognition in a manner which produces machine-readable patterns. EEG demonstrates this capacity in existing research through the use of data cleaning, feature extraction and further optimizations for downstream classifiers, which yields compelling accuracy and recall results on several cognitive task classifications.
+
+An important, and intuitive, paradigm of machine learning use in human cognition is the classification of working memory usage, which at face value, offers a continuous unbroken target variable that exhibits deltas in degrees of intensity. These characteristics of working memory are due to its well-studied limitations in humans, which are generally quite thin; the average human can only hold around 4-7 chunks of information in their working memory at a given moment. This makes working memory easily measurable, since subject performance in memory tests degrades predictably. Consequently, machine learning is intuitively applied in this paradigm - since there are clear average boundaries in human working memory, a classifier can distinguish between them, given adequate sensor information. 
+
+EEG fulfills this sensing criteria. The measurement method - a cap of electrodes placed on the cranium - measures the amplitude and frequency of electrical impulses traveling across the brain. Because of the speed at which these impulses travel, EEG has excellent temporal resolution; the time it takes for a change in cognition to be registered by the sensors is negligible, making it highly accurate for downstream analysis. There is also a wealth of open-access EEG data available due to the age of the technology, making the construction of a dataset for machine-classified working memory feasible. 
+
+Working memory is readily measured through the conduction of the n-back experiment, where a subject must remember a rotating set of numbers and compare them to new stimuli. A given 2-back workflow would look like this: 
+
+- The subject is given two numbers to memorize. 
+
+- The subject is shown a third number, and must return whether the number matches one number in the set.
+
+- The third number is then appended to the memorized set (and the first number in the set dropped) and the experiment continues. 
+
+On average, subject performance heavily drops as n grows, which is consistent with real-world working memory capabilities. 
+In the scope of our research, the n-back experiment will be used as the pivot of our downstream classification. The target variable will be n (the number of backs in the experiment) and the EEG sensor data will provide features for the classifiers.
+
+The questions we would like to answer with this research are the following: 
+- Can machine learning be implemented to classify different levels of working memory demand using EEG sensor data? 
+- Can a comparable model performance be derived from classifying working memory levels, against only classifying the use of working memory entirely? 
+
+# Literature Review
+
+Classifying EEG signals with machine learning is an ongoing multi-pronged endeavor in both acquiring the necessary data for analysis, and developing innovative mathematical methods to achieve the best results on the downstream models. We review several data descriptors and research papers, which have brought forth findings on analyzing EEG measurements that not only form the basis of this research, but also provide the necessary data to conduct analysis and train models. The most important of these studies for our findings was the research by Shin et al. on hybridizing EEG and fNIRS data, which saw the use of the n-back experiment for working memory demand and a downstream classification of this experiment using the hybrid dataset, which provided the method for our research and the focus on working memory and the n-back experiment.
+
+Shin et al. provided the basis of our n-back tests as well as a data repository in their data descriptor on hybridizing EEG and fNIRS readings to create a more effective dataset. Their justification for this was the inherent disparity between the two methods; EEG has high temporal resolution (quick response sensing) but low spatial resolution (difficult to pinpoint measurement areas) while fNIRS has the opposite issues. Therefore, creating a dataset that hosts both of these methods can harness their individual strengths and address their weaknesses. Their methods hinged on the experiment paradigm, which involved the simultaneous acquisition of both sets of measurements via customized placement of EEG and fNIRS sensor nodes. Their work proved that the creation of such a hybridized dataset is possible and results in usable data, and also introduced the concept of using this hybrid data to improve classifier performance, compared to only using EEG or fNIRS data alone. While out of scope for our research, this is a potential elaboration on the topic of classifying brain measurements. 
+
+To develop a mathematical pipeline that cleans EEG data for enhanced downstream analysis and classification, Yedukondalu et al. developed an innovative workflow that combines aggressive data cleaning steps with several robust algorithms, most notably robust-local mean decomposition. This workflow was applied to the open-access MAT and STEW datasets, which were cleaned and run through R-LMD, feature extraction, and finally classified via ensemble classification. The paper’s goal was to optimize for efficient analysis methods that challenge state-of-the-art classification tools in accuracy, using consistent open-access data that allows for iteration upon former methods. Their accuracy results are promising (97.4% accuracy on MAT, 96.1% on STEW) and pointed us to R-LMD for a potential EEG decomposition method. However, their methods of gathering this accuracy from model performance are flawed due to a cross-validation technique in their pipeline that reveals test data in the training set, endangering memorization by the ensemble models. Their focus on mathematical decomposition is the most invaluable portion of their research to our scope. 
+
+Bintay Shafi et al. addresses gaps in existing cognitive load classification methods by intentionally integrating noise and multitasking into their signal, and comparing classification results between a noise-free EEG dataset and a noisy EEG dataset with the same set of participants and tasks. Their goal was to apply existing techniques to a more realistic data collection scenario, effectively “stress-testing” these methods and optimizing for noisy data with new methods. While the nature of their research (multitasking signals) makes their resulting dataset unusable for our purposes, they point us to the COG-BCI dataset in their review of existing data, which provides 0, 1, and 2-back trials which, when combined with the data acquired by Shin et al, yield promising classification results. 
+
+For our study, we have revised and modified the implementation undergone by Yedukondalu et al. in training classifiers on EEG data using an in-depth cleaning pipeline. We use differing data sets - COG-BCI and the data obtained from the study by Shin et al., and join these into a large tabular CSV to enable feature-trained downstream model selection. We address data leakage issues in the original parent study by Yedukondalu et al. and provide our own approach to prevent this. We compare the results of our models to those in the previous studies to get a clearer picture on the limits of feature-based ML on working memory use classification.
+
+# Methodology
+
+The following section discusses our key divergences from the parent study by Yedukondalu et al., tabulates our considerations for how we would implement a given stage in the data science pipeline, and explains, in depth, our final decision on a given task.
+
+## 1. Data
+
+### Datasets
+
+The datasets used by Yedukondalu et al. were the MAT and STEW EEG datasets, with 36 and 42 participants, respectively. They include the results of multiple cognitive tasks. They are out of scope for this study, because neither of them contain the n-back experiment. The dataset choice represents our first key divergence from the parent study. 
+
+```{r}
+
+library(kableExtra)
+library(dplyr)
+
+datasets <- data.frame(
+  `Dataset` = c('MAT (36 subjects)', 'STEW (42 subjects)', 'iNCog-EEG (40 subjects)', 'Shin 2018 (26 subjects)', 'COG-BCI v4 (29 subjects)'),
+  `Source` = c('Yedukondalu et al.', 'Yedukondalu et al.', 'iNCog 2026', 'Shin 2026', 'COG-BCI 2023'),
+  `Description` = c('Original parent study dataset. Out of scope due to lack of n-back experiment.', 'Original parent study dataset. Out of scope due to lack of n-back experiment.', 'Multitasking dataset containing n-back task. Left out due to confounding data with other tasks and time.', 'n-back experiment dataset with per-trial behavior. Included in joined dataset.', '4th version of the original COG-BCI n-back dataset that fixed some bugs in participants 17-24 and an electrode name mismatch.'),
+  `Decision` = c('Not selected', 'Not selected', 'Not selected', 'Selected', 'Selected')
+)
+
+kbl(datasets, format = "latex", booktabs = TRUE, linesep = "\\addlinespace",
+    caption = "Datasets considered for downstream analysis") |>
+  kable_styling(latex_options = "hold_position", font_size = 9) |>
+  column_spec(1, width = "3cm") |>
+  column_spec(2, width = "2.6cm") |>
+  column_spec(3, width = "6.6cm") |>
+  column_spec(4, width = "2cm")
+```
+
+The Shin 2018 n-back dataset and the COG-BCI v4 were chosen for downstream joining and analysis. They both exclusively contain n-back results from their respective studies, with Shin including n-values 0, 1, 2, while COG-BCI v4 includes n-values 0, 2, 3. The shared n-values 0 and 2 will be used for analysis on the first and second research question in the joined dataset, while the individual datasets will be used exclusively for the second research question (classifying levels of working memory load, as opposed to classifying between the presence and non-presence of load).
+
+### Joins 
+
+Yedukondalu et al. conducted their data analysis on the MAT and STEW datasets independently, comparing results of similar pipeline procedures once the data was completely processed. We approach the use of our data from an aggregation perspective; by merging Shin 2018 with COG-BCI to create a larger dataset, we facilitate more accurate downstream model performance. 
+
+```{r}
+
+joins <- data.frame(
+  `Technique` = c('Inner Joins', 'Key Joins'),
+  `Description` = c('Union of rows, inner join on channels and on the label domain (eliminating NAs)', 'Key join on subjects shared between studies'),
+  `Decision` = c('Selected', 'Not Selected'),
+  `Result` = c('26 channels, levels 0-3, 0 and 2 shared by datasets', 'Impossible: no subject appears in both datasets')
+)
+
+kbl(joins, format = "latex", booktabs = TRUE, linesep = "\\addlinespace",
+    caption = "Join methods for aggregated data") |>
+  kable_styling(latex_options = "hold_position", font_size = 9) |>
+  column_spec(1, width = "2.4cm") |>
+  column_spec(2, width = "5.6cm") |>
+  column_spec(3, width = "2.2cm") |>
+  column_spec(4, width = "4.6cm")
+```
+
+### Validation
+
+The original cross-validation technique used by Yedukondalu et al. was a pooled segments technique, where all subjects were randomly selected from for cross-validation. This technique resulted in data leakage due to each recording in the raw datasets containing one condition, therefore letting the model find labels by simply identifying the recordings in the validation. We resolve this issue by using an alternative cross-validation technique. 
+
+```{r}
+
+vals <- data.frame(
+  `Technique` = c('10-fold randomized CV', 'Leave-one-subject-out', 'Stratified 10-fold over windows', 'Subject-wise 10-fold', 'Leave-one-dataset-out'),
+  `Description` = c('CV used in Yedukondalu study. Susceptible to recording leakage leading to inflated accuracy.', 'Unseen subjects for validation. Lack of signal from Shin 2018.', 'Taken from iNCog 2026. No scheme for this technique given.', 'CV across subjects. Used as a viability baseline.', 'Cross-dataset check. (Entire datasets unseen)'),
+  `Decision` = c('Not Selected', 'Not Selected', 'Not Selected', 'Selected', 'Selected')
+)
+
+kbl(vals, format = "latex", booktabs = TRUE, linesep = "\\addlinespace",
+    caption = "Cross-validation techniques") |>
+  kable_styling(latex_options = "hold_position", font_size = 9) |>
+  column_spec(1, width = "3cm") |>
+  column_spec(2, width = "6.5cm") |>
+  column_spec(3, width = "2.2cm")
+```
+
+Subject-wise 10 fold cross validation was chosen as a viability baseline for downstream classification. Folding across subjects means that the classifier is validated on its performance for a subject when trained on only other people. This also resolves the data leakage issue because it no longer leaks different record types across training data. Leave-one-dataset-out CV is used as a further validation technique with the iNCog dataset to ensure completely unused data for evaluation.

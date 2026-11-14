@@ -1,0 +1,101 @@
+technique,seed,subjects_in_2plus_splits,train_pct,test_pct,val_pct,max_share_error_pts,max_shin_share_error_pts,min_windows_per_level_per_split,probe_test_acc_z,probe_test_acc_raw
+"A window-level, stratified by dataset x n",0,55,69.997,20.006,9.997,0.006,0.026,236,75.007,71.835
+"A window-level, stratified by dataset x n",1,55,69.997,20.006,9.997,0.006,0.026,236,75.366,72.469
+"A window-level, stratified by dataset x n",2,55,69.997,20.006,9.997,0.006,0.026,236,75.403,71.907
+"A window-level, stratified by dataset x n",3,55,69.997,20.006,9.997,0.006,0.026,236,75.926,71.317
+"A window-level, stratified by dataset x n",4,55,69.997,20.006,9.997,0.006,0.026,236,76.554,72.801
+"A window-level, stratified by dataset x n",5,55,69.997,20.006,9.997,0.006,0.026,236,74.858,71.176
+"A window-level, stratified by dataset x n",6,55,69.997,20.006,9.997,0.006,0.026,236,74.307,72.018
+"A window-level, stratified by dataset x n",7,55,69.997,20.006,9.997,0.006,0.026,236,73.7,71.386
+"A window-level, stratified by dataset x n",8,55,69.997,20.006,9.997,0.006,0.026,236,74.722,71.686
+"A window-level, stratified by dataset x n",9,55,69.997,20.006,9.997,0.006,0.026,236,74.872,71.66
+"A window-level, stratified by dataset x n",10,55,69.997,20.006,9.997,0.006,0.026,236,74.85,72.362
+"A window-level, stratified by dataset x n",11,55,69.997,20.006,9.997,0.006,0.026,236,75.756,72.493
+"A window-level, stratified by dataset x n",12,55,69.997,20.006,9.997,0.006,0.026,236,74.94,71.467
+"A window-level, stratified by dataset x n",13,55,69.997,20.006,9.997,0.006,0.026,236,75.789,71.042
+"A window-level, stratified by dataset x n",14,55,69.997,20.006,9.997,0.006,0.026,236,75.678,72.131
+"A window-level, stratified by dataset x n",15,55,69.997,20.006,9.997,0.006,0.026,236,75.3,72.389
+"A window-level, stratified by dataset x n",16,55,69.997,20.006,9.997,0.006,0.026,236,74.632,72.468
+"A window-level, stratified by dataset x n",17,55,69.997,20.006,9.997,0.006,0.026,236,74.022,72.908
+"A window-level, stratified by dataset x n",18,55,69.997,20.006,9.997,0.006,0.026,236,74.232,71.548
+"A window-level, stratified by dataset x n",19,55,69.997,20.006,9.997,0.006,0.026,236,75.404,71.27
+"B block-level, stratified by dataset",0,55,69.939,20.136,9.925,0.136,0.071,222,71.856,65.679
+"B block-level, stratified by dataset",1,55,69.92,20.109,9.971,0.109,0.054,231,73.524,65.806
+"B block-level, stratified by dataset",2,55,69.947,20.148,9.905,0.148,0.162,253,72.441,67.353
+"B block-level, stratified by dataset",3,55,69.962,20.071,9.967,0.071,0.082,272,72.938,67.671
+"B block-level, stratified by dataset",4,55,69.889,20.064,10.047,0.111,0.184,191,72.087,65.691
+"B block-level, stratified by dataset",5,55,70.058,20.018,9.925,0.075,0.11,242,71.286,63.422
+"B block-level, stratified by dataset",6,55,69.935,20.109,9.955,0.109,0.064,231,72.31,67.437
+"B block-level, stratified by dataset",7,55,70.008,20.033,9.959,0.041,0.092,170,72.073,66.476
+"B block-level, stratified by dataset",8,55,70.008,20.018,9.974,0.026,0.11,311,73.421,69.013
+"B block-level, stratified by dataset",9,55,69.958,20.064,9.978,0.064,0.048,190,73.094,66.906
+"B block-level, stratified by dataset",10,55,69.954,20.056,9.99,0.056,0.085,232,71.943,64.98
+"B block-level, stratified by dataset",11,55,70.054,19.922,10.024,0.078,0.337,241,72.821,70.695
+"B block-level, stratified by dataset",12,55,69.981,20.071,9.948,0.071,0.039,262,73.136,69.04
+"B block-level, stratified by dataset",13,55,70.004,20.01,9.986,0.014,0.082,231,73.537,67.112
+"B block-level, stratified by dataset",14,55,69.92,20.086,9.993,0.086,0.116,182,70.818,65.364
+"B block-level, stratified by dataset",15,55,69.935,20.06,10.005,0.065,0.034,250,72.491,69.858
+"B block-level, stratified by dataset",16,55,69.92,20.064,10.016,0.08,0.178,210,73.895,68.12
+"B block-level, stratified by dataset",17,55,69.939,20.113,9.948,0.113,0.008,242,70.832,65.11
+"B block-level, stratified by dataset",18,55,70.088,20.041,9.871,0.129,0.14,262,70.965,65.049
+"B block-level, stratified by dataset",19,55,69.977,20.079,9.944,0.079,0.211,232,71.429,68.671
+"C session-level, stratified by dataset",0,37,70.142,19.666,10.192,0.334,1.491,240,70.875,63.427
+"C session-level, stratified by dataset",1,34,69.974,19.8,10.227,0.227,0.931,243,68.061,63.877
+"C session-level, stratified by dataset",2,35,69.729,20.041,10.231,0.271,0.766,243,69.903,67.351
+"C session-level, stratified by dataset",3,37,70.008,19.8,10.192,0.2,0.931,240,70.123,65.298
+"C session-level, stratified by dataset",4,37,69.733,19.8,10.468,0.468,0.931,246,66.605,62.932
+"C session-level, stratified by dataset",5,34,69.939,19.834,10.227,0.227,1.056,243,69.571,66.464
+"C session-level, stratified by dataset",6,37,70.004,19.8,10.196,0.2,0.931,240,68.68,63.288
+"C session-level, stratified by dataset",7,40,70.176,19.597,10.227,0.403,1.24,243,70.779,68.707
+"C session-level, stratified by dataset",8,34,70.146,19.627,10.227,0.373,1.352,243,73.75,66.636
+"C session-level, stratified by dataset",9,39,69.939,19.627,10.433,0.433,1.352,243,76.12,69.447
+"C session-level, stratified by dataset",10,34,69.595,20.213,10.192,0.405,0.359,240,67.814,64.402
+"C session-level, stratified by dataset",11,37,69.97,19.8,10.231,0.231,0.931,243,71.988,65.199
+"C session-level, stratified by dataset",12,38,70.18,19.593,10.227,0.407,1.226,243,74.028,66.586
+"C session-level, stratified by dataset",13,33,70.004,19.597,10.399,0.403,1.24,240,71.242,66.049
+"C session-level, stratified by dataset",14,39,69.767,19.593,10.64,0.64,1.226,243,71.589,66.868
+"C session-level, stratified by dataset",15,36,69.974,19.593,10.433,0.433,1.226,243,71.74,65.628
+"C session-level, stratified by dataset",16,38,69.767,19.834,10.399,0.399,1.056,240,68.629,65.9
+"C session-level, stratified by dataset",17,37,69.767,19.765,10.468,0.468,0.806,246,73.821,69.443
+"C session-level, stratified by dataset",18,38,69.763,19.803,10.433,0.433,0.945,243,73.853,68.522
+"C session-level, stratified by dataset",19,38,69.974,19.834,10.192,0.192,1.056,240,75.565,69.81
+"D subject-level, unstratified",0,0,74.691,18.594,6.715,4.691,36.008,216,72.01,62.637
+"D subject-level, unstratified",1,0,73.142,18.801,8.058,3.142,11.393,270,68.046,60.579
+"D subject-level, unstratified",2,0,74.381,17.251,8.367,4.381,15.446,279,67.731,63.381
+"D subject-level, unstratified",3,0,68.906,21.59,9.504,1.59,7.452,180,72.674,67.079
+"D subject-level, unstratified",4,0,68.493,20.35,11.157,1.507,17.81,90,66.647,65.007
+"D subject-level, unstratified",5,0,68.39,24.586,7.025,4.586,31.755,180,72.465,63.157
+"D subject-level, unstratified",6,0,73.348,17.148,9.504,3.348,15.1,180,68.069,63.013
+"D subject-level, unstratified",7,0,71.485,20.458,8.058,1.942,11.393,270,70.235,66.493
+"D subject-level, unstratified",8,0,70.042,20.247,9.71,0.29,5.792,180,65.778,60.533
+"D subject-level, unstratified",9,0,66.84,24.999,8.161,4.999,18.804,180,67.834,64.67
+"D subject-level, unstratified",10,0,68.596,20.041,11.363,1.404,17.978,90,66.898,62.613
+"D subject-level, unstratified",11,0,70.352,20.041,9.607,0.393,4.488,189,70.727,64.637
+"D subject-level, unstratified",12,0,69.836,22.003,8.161,2.003,12.172,279,65.938,64.006
+"D subject-level, unstratified",13,0,71.898,17.152,10.95,2.848,17.635,90,71.761,63.365
+"D subject-level, unstratified",14,0,73.964,19.218,6.818,3.964,33.537,234,64.459,61.148
+"D subject-level, unstratified",15,0,71.385,20.247,8.367,1.633,11.203,279,65.883,58.923
+"D subject-level, unstratified",16,0,74.175,17.561,8.264,4.175,14.108,270,62.411,59.006
+"D subject-level, unstratified",17,0,71.282,17.768,10.95,2.232,17.635,90,66.756,59.947
+"D subject-level, unstratified",18,0,73.348,18.594,8.058,3.348,11.393,270,76.058,71.858
+"D subject-level, unstratified",19,0,74.175,17.768,8.058,4.175,13.629,270,65.677,64.572
+"E subject-level, stratified by dataset x Cz",0,0,68.7,20.764,10.537,1.3,2.343,270,68.157,65.341
+"E subject-level, stratified by dataset x Cz",1,0,69.423,20.041,10.537,0.577,2.343,270,70.903,62.813
+"E subject-level, stratified by dataset x Cz",2,0,69.006,20.251,10.743,0.994,1.777,270,67.365,63.293
+"E subject-level, stratified by dataset x Cz",3,0,68.7,20.35,10.95,1.3,1.233,270,72.926,68.404
+"E subject-level, stratified by dataset x Cz",4,0,69.216,20.247,10.537,0.784,2.343,270,69.397,66.31
+"E subject-level, stratified by dataset x Cz",5,0,69.009,20.454,10.537,0.991,2.343,270,68.565,64.797
+"E subject-level, stratified by dataset x Cz",6,0,69.212,20.148,10.64,0.788,3.028,279,73.222,67.108
+"E subject-level, stratified by dataset x Cz",7,0,68.493,20.764,10.743,1.507,1.777,270,68.115,65.559
+"E subject-level, stratified by dataset x Cz",8,0,69.009,20.247,10.743,0.991,1.777,270,68.987,63.596
+"E subject-level, stratified by dataset x Cz",9,0,68.592,20.458,10.95,1.408,1.802,270,70.971,67.192
+"E subject-level, stratified by dataset x Cz",10,0,68.803,20.557,10.64,1.197,3.028,279,68.44,66.3
+"E subject-level, stratified by dataset x Cz",11,0,69.113,20.35,10.537,0.887,2.343,270,74.538,66.214
+"E subject-level, stratified by dataset x Cz",12,0,69.006,20.044,10.95,0.994,1.282,270,71.252,64.462
+"E subject-level, stratified by dataset x Cz",13,0,69.212,20.044,10.743,0.788,1.777,270,72.76,67.24
+"E subject-level, stratified by dataset x Cz",14,0,69.113,20.35,10.537,0.887,2.343,270,74.389,71.975
+"E subject-level, stratified by dataset x Cz",15,0,68.906,20.454,10.64,1.094,3.028,279,66.885,65.009
+"E subject-level, stratified by dataset x Cz",16,0,69.006,20.251,10.743,0.994,1.777,270,67.715,63.531
+"E subject-level, stratified by dataset x Cz",17,0,69.113,20.35,10.537,0.887,2.343,270,67.994,66.549
+"E subject-level, stratified by dataset x Cz",18,0,69.113,20.247,10.64,0.887,3.028,279,70.572,60.823
+"E subject-level, stratified by dataset x Cz",19,0,69.423,20.041,10.537,0.577,2.343,270,72.685,65.885
