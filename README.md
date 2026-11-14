@@ -8,4 +8,3 @@ synthesis/: midterm and project work
 
 analysis/: 70/20/10 train/test/validation split of the synthesized dataset
 
-technique_comparison.md: techniques tried in synthesis and analysis vs the source papers' methods
