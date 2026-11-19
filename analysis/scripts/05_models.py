@@ -13,7 +13,7 @@ accuracy). The chosen configuration is refitted on all of train and scored on va
     rf        random forest on band power + R-LMD (1,040 features)
     xgb       XGBoost on band power + R-LMD
     riemann   filter-bank tangent space (theta, alpha, beta covariances, subject re-centred)
-              + logistic regression (900 features)
+              + logistic regression (975 features)
 
 Outputs: cache/models/<task>_<model>.json, results/predictions/<task>__<model>.npz.
 """

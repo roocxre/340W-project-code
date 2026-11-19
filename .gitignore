@@ -42,3 +42,6 @@ analysis/cache/
 # run_pipeline.py: environment tools, stage state, run logs; partial outputs
 .pipeline/
 *.partial
+
+# paper files
+docs/

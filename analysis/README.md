@@ -103,7 +103,7 @@ Classes are nearly balanced: in every task and split the largest class is at mos
 | EEGNet-8,2 | baseline | raw EEG, 25 × 400 (sum-zero projection, 100 Hz) | Euclidean alignment per subject | early stopping on val loss; 3 seeds averaged |
 | RBF SVM, MLP | candidate | band power | z-score within subject | grid, subject-wise 5-fold, balanced accuracy |
 | Random forest, XGBoost | candidate | band power + R-LMD, 1,040 | z-score within subject | grid, subject-wise 5-fold |
-| Riemannian tangent space | candidate | theta / alpha / beta covariances (OAS), 900 | each subject re-centred to its own Riemannian mean | C, subject-wise 5-fold |
+| Riemannian tangent space | candidate | theta / alpha / beta covariances (OAS), 975 | each subject re-centred to its own Riemannian mean | C, subject-wise 5-fold |
 | Gated soft vote | candidate | mean probability of the candidates that pass the gate | — | gate decided on validation |
 
 - **The Yedukondalu baselines run the eeg-load reproduction unchanged.** Feature extraction, BAO and the six optimizable classifiers all come from [../eeg-load/loadrepro/](../eeg-load/loadrepro/). The ensemble is the paper's proposed model. The other five families (tree, discriminant, naive Bayes, KNN, SVM) are in the leakage table.

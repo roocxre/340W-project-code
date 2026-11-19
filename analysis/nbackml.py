@@ -155,7 +155,7 @@ def tangent_recentred(df):
     """Filter-bank tangent-space features, each subject re-centred to its own Riemannian mean.
 
     For each subject and band, C -> M^-1/2 C M^-1/2 with M the subject's mean covariance
-    (no labels), then the log map at the identity: 3 x 300 = 900 features.
+    (no labels), then the log map at the identity: 3 x 325 = 975 features.
     """
     from pyriemann.geometry.base import invsqrtm, logm
     from pyriemann.geometry.mean import mean_riemann
