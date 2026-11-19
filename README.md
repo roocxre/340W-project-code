@@ -42,10 +42,16 @@ Both datasets are downloaded automatically, only their n-back files, and every f
 
 Keep the machine powered and awake. The script blocks idle sleep while it runs (caffeinate on macOS, SetThreadExecutionState on Windows, systemd-inhibit on Linux). A laptop that is closed or runs out of battery will still stop.
 
+### Windows notes
+
+- **NVIDIA GPU.** PyPI's Windows PyTorch is CPU-only. When `nvidia-smi` is present and the driver supports CUDA 13.2+, the script swaps in the CUDA build of the same version (`torch 2.15.0+cu132`, about 3 GB) so EEGNet trains on the GPU. If that fails, it keeps the CPU build and carries on.
+- **Certificates.** Windows adds root certificates only when its own browser or APIs need them, so a fresh PC may lack the root behind TU Berlin's server. The pipeline also trusts Mozilla's root list (`certifi`, inside `.venv`). On a network that intercepts HTTPS (a corporate proxy), set `SSL_CERT_FILE` to the proxy's CA bundle.
+- **Use one kind of session.** Start every run either from a normal terminal or from an SSH session, not a mix. `.venv` made from a normal terminal does not start from an administrator SSH session: Windows refuses to follow uv's Python link created at the lower privilege level (`os error 448` / "uv trampoline failed to spawn Python"). Over SSH, which drops the run if the connection drops, start it with a scheduled task or keep the connection alive.
+
 ### What it runs, in order
 
 1. **Preflight.** Checks the platform, free disk, RAM and both download servers.
-2. **Environment.** Creates `.venv/` with Python 3.12 and `requirements.txt`, via [uv](https://docs.astral.sh/uv/), which is installed into `.pipeline/tools/`. Then checks that every package imports.
+2. **Environment.** Creates `.venv/` with Python 3.12 and `requirements.txt`, via [uv](https://docs.astral.sh/uv/), which is installed into `.pipeline/tools/`. Then checks that every package imports, swaps in CUDA PyTorch on Windows with an NVIDIA GPU, and checks verified HTTPS to both data servers.
 3. **Unit tests** of synthesis, analysis and eeg-load's `loadrepro` (the R-LMD port, BAO and the optimizable classifiers).
 4. **All downloads:** the COG-BCI notebook, Shin, COG-BCI, and the COG-BCI event scan.
 5. **synthesis:** harmonization of both datasets, `nback_features.csv`, the viability checks, and the R-LMD pilot.

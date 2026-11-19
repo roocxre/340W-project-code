@@ -193,17 +193,19 @@ def preflight(args, res, todo):
         warnings.append(f"{res.ram:.0f} GB RAM: runs with few parallel workers, so it will be slow")
 
     for name, url in (SOURCES.items() if need_net else ()):
-        err = None
+        err, note = None, ""
         for attempt in range(3):
-            try:
-                with urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=60) as r:
-                    err = None if r.status == 200 else f"HTTP {r.status}"
-            except Exception as e:
-                err = repr(e)
+            err = head(url)
+            if err == "certificate":
+                # This Python's trust store lacks the server's root CA (common on Windows, which adds
+                # roots lazily). Reachability is checked without verification here; downloads run in
+                # .venv with certifi's CA bundle, and tls_check() verifies that after setup.
+                err = head(url, verify=False)
+                note = " (certificate verified after setup, with the certifi CA bundle)"
             if err is None:
                 break
             time.sleep(10)
-        say(f"network  {name}: {'ok' if err is None else f'FAILED ({err})'}")
+        say(f"network  {name}: {'ok' + note if err is None else f'FAILED ({err})'}")
         if err:
             problems.append(f"cannot reach {name} at {url}")
 
@@ -216,6 +218,42 @@ def preflight(args, res, todo):
         else:
             die(f"fix the following, then run the same command again:\n{msg}")
     say("preflight ok")
+
+
+def head(url, verify=True):
+    """None if a HEAD request succeeds, "certificate" on a TLS trust failure, else the error."""
+    import ssl
+    ctx = None if verify else ssl._create_unverified_context()
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=60, context=ctx) as r:
+            return None if r.status == 200 else f"HTTP {r.status}"
+    except Exception as e:
+        if verify and "CERTIFICATE_VERIFY_FAILED" in repr(e):
+            return "certificate"
+        return repr(e)
+
+
+def ca_bundle():
+    """certifi's CA bundle inside .venv (Mozilla's root store), or None before setup."""
+    site = VENV / ("Lib/site-packages" if IS_WIN else f"lib/python{PY_VERSION}/site-packages")
+    p = site / "certifi" / "cacert.pem"
+    return str(p) if p.exists() else None
+
+
+def tls_check(py):
+    """Verified HTTPS to every data source from .venv, as the download stages will do it."""
+    code = ("import sys, urllib.request\n"
+            "for url in sys.argv[1:]:\n"
+            "    try:\n"
+            "        urllib.request.urlopen(urllib.request.Request(url, method='HEAD'), timeout=60).close()\n"
+            "        print('ok    ', url)\n"
+            "    except Exception as e:\n"
+            "        print('FAILED', url, repr(e)); sys.exit(1)\n")
+    say("checking verified HTTPS to the data sources from .venv")
+    p = run_quiet([py, "-c", code] + list(SOURCES.values()), env=child_env())
+    if p.returncode != 0:
+        die("a data source failed TLS verification (output above). If this network intercepts HTTPS "
+            "(a corporate proxy), set SSL_CERT_FILE to its CA bundle and run again.")
 
 
 def du(p):
@@ -320,12 +358,51 @@ def ensure_env():
     return py
 
 
+# PyPI's Windows torch wheels are CPU-only; PyTorch's own index has the CUDA build of the same version.
+# CUDA 13.2 matches the build Linux gets from PyPI (and needs an NVIDIA driver for CUDA >= 13.2).
+TORCH_CUDA = ("2.15.0+cu132", "https://download.pytorch.org/whl/cu132", (13, 2))
+
+
+def ensure_cuda_torch(py):
+    """On Windows with an NVIDIA GPU, swap in the CUDA build of the pinned torch (EEGNet then trains
+    on the GPU). Best effort: any problem leaves the CPU build in place and the run continues."""
+    import re
+    if not IS_WIN or not shutil.which("nvidia-smi"):
+        return
+    probe = "import torch; print(torch.__version__, torch.version.cuda or '', torch.cuda.is_available())"
+    r = subprocess.run([str(py), "-c", probe], capture_output=True, text=True, env=child_env())
+    if r.returncode == 0 and r.stdout.split()[-1] == "True":
+        say(f"torch {r.stdout.split()[0]}: CUDA build, GPU available")
+        return
+    smi = subprocess.run(["nvidia-smi"], capture_output=True, text=True, errors="replace").stdout
+    m = re.search(r"CUDA (?:UMD )?Version: (\d+)\.(\d+)", smi)
+    need = TORCH_CUDA[2]
+    if not m or (int(m.group(1)), int(m.group(2))) < need:
+        say(f"WARNING  NVIDIA driver supports CUDA {m.group(1) + '.' + m.group(2) if m else '?'}; "
+            f"the GPU build needs {need[0]}.{need[1]}+, so EEGNet trains on the CPU (update the driver to use the GPU)")
+        return
+    say(f"NVIDIA GPU found: installing torch {TORCH_CUDA[0]} (CUDA build, ~3 GB) so EEGNet trains on it")
+    uv = find_uv()
+    p = run_quiet([uv, "pip", "install", "--python", py, "--extra-index-url", TORCH_CUDA[1],
+                   f"torch=={TORCH_CUDA[0]}"], env=dict(os.environ, UV_HTTP_TIMEOUT="300"))
+    r = subprocess.run([str(py), "-c", probe], capture_output=True, text=True, env=child_env())
+    if p.returncode == 0 and r.returncode == 0 and r.stdout.split()[-1] == "True":
+        say(f"torch {r.stdout.split()[0]}: GPU available")
+        return
+    say("WARNING  the CUDA build of torch did not work; restoring the CPU build (EEGNet trains on the CPU)")
+    run_quiet([uv, "pip", "install", "--python", py, "--reinstall-package", "torch", "-r", REQ])
+
+
 def child_env(extra=None):
     env = dict(os.environ)
     for k in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV", "CONDA_PREFIX"):
         env.pop(k, None)
     env.update(PYTHONUTF8="1", PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1", PYTHONNOUSERSITE="1",
                MPLBACKEND="Agg")
+    # Trust Mozilla's roots (certifi) in addition to the system store: Windows adds root CAs only on
+    # demand, so e.g. TU Berlin's HARICA root can be missing. A user-set SSL_CERT_FILE wins.
+    if ca_bundle() and "SSL_CERT_FILE" not in os.environ:
+        env["SSL_CERT_FILE"] = ca_bundle()
     env.update(extra or {})
     return env
 
@@ -575,6 +652,9 @@ def main():
         how = keep_awake()
         say(f"sleep prevention: {how or 'not available - keep the machine awake (power settings)'}")
         py = ensure_env()
+        ensure_cuda_torch(py)
+        if any(s.name.startswith(NEEDS_NET) for s in todo):
+            tls_check(py)
     else:
         py = venv_python()
     if skipped:
