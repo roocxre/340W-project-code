@@ -1,0 +1,16 @@
+task,model,passes,min_recall,min_precision_over_prevalence,auc_ci_lo
+bin,svm,True,66.21,18.51,68.29
+bin,mlp,True,62.53,14.34,62.55
+bin,rf,True,67.8,19.72,69.76
+bin,xgb,True,67.12,19.07,70.77
+bin,riemann,True,66.78,19.26,68.26
+shin3,svm,True,46.47,12.58,57.83
+shin3,mlp,True,38.43,7.62,53.79
+shin3,rf,True,42.91,13.79,58.21
+shin3,xgb,True,45.52,14.19,56.53
+shin3,riemann,True,40.15,6.76,53.71
+cog3,svm,True,36.09,6.37,56.02
+cog3,mlp,True,33.61,2.45,52.34
+cog3,rf,False,30.63,7.91,57.62
+cog3,xgb,True,37.75,8.95,60.3
+cog3,riemann,False,33.28,5.93,62.63

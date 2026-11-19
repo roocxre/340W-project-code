@@ -1,0 +1,56 @@
+bin_corrected_pooled: train 11488 windows / 38 subjects, val 1733, test 3445, 780 features, classes [5714, 5774]
+  BAO kept 44/780, fitness 0.4503 -> 0.4160 (675 s)
+  Tree          CV acc 57.3 | val 50.6 | test acc 52.1 bacc 52.0 auc 52.0 | {'max_splits': 1, 'criterion': 'entropy'} (27 s)
+  Discriminant  CV acc 61.6 | val 59.6 | test acc 60.1 bacc 60.1 auc 64.0 | {'kind': 'linear'} (22 s)
+  Naive Bayes   CV acc 54.5 | val 51.7 | test acc 50.2 bacc 50.0 auc 59.5 | {'distribution': 'gaussian'} (206 s)
+  KNN           CV acc 61.0 | val 55.5 | test acc 59.2 bacc 59.2 auc 62.3 | {'k': 669, 'metric': 'cosine', 'weight': 'equal'} (120 s)
+/Users/roo/vscode/340W/cognitive-data-analysis/synthesis/.venv/lib/python3.12/site-packages/joblib/externals/loky/process_executor.py:787: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  warnings.warn(
+  SVM           CV acc 61.7 | val 59.8 | test acc 59.8 bacc 59.8 auc 64.0 | {'kernel': 'linear', 'C': 0.004197660160950335, 'kernel_scale': 2.1583804963205933} (802 s)
+  EL            CV acc 59.4 | val 55.7 | test acc 61.9 bacc 61.8 auc 69.0 | {'method': 'Bag', 'n_learners': 94, 'max_splits': 482, 'n_predictors': 38} (2430 s)
+shin3_corrected_pooled: train 4562 windows / 18 subjects, val 802, test 1356, 780 features, classes [1534, 1519, 1509]
+  BAO kept 68/780, fitness 0.6085 -> 0.5898 (172 s)
+  Tree          CV acc 41.5 | val 34.5 | test acc 39.9 bacc 39.7 auc 55.3 | {'max_splits': 1, 'criterion': 'gini'} (17 s)
+  Discriminant  CV acc 41.3 | val 34.2 | test acc 39.2 bacc 39.1 auc 56.6 | {'kind': 'diaglinear'} (5 s)
+  Naive Bayes   CV acc 38.7 | val 35.5 | test acc 37.2 bacc 37.1 auc 54.1 | {'distribution': 'kernel', 'kernel': 'epanechnikov'} (136 s)
+  KNN           CV acc 40.3 | val 36.0 | test acc 39.2 bacc 39.1 auc 55.9 | {'k': 5, 'metric': 'euclidean', 'weight': 'equal'} (22 s)
+  SVM           CV acc 41.4 | val 33.9 | test acc 38.3 bacc 38.2 auc 56.7 | {'kernel': 'cubic', 'C': 0.587321870848151, 'kernel_scale': 48.21421028527763} (125 s)
+  EL            CV acc 41.9 | val 34.4 | test acc 38.6 bacc 38.6 auc 56.1 | {'method': 'Bag', 'n_learners': 477, 'max_splits': 19, 'n_predictors': 61} (1232 s)
+cog3_corrected_pooled: train 12673 windows / 20 subjects, val 1804, test 3798, 780 features, classes [4180, 4238, 4255]
+  BAO kept 53/780, fitness 0.6335 -> 0.6149 (919 s)
+  Tree          CV acc 38.3 | val 35.4 | test acc 42.0 bacc 42.0 auc 59.3 | {'max_splits': 27, 'criterion': 'gini'} (50 s)
+  Discriminant  CV acc 40.7 | val 42.1 | test acc 42.1 bacc 42.0 auc 60.5 | {'kind': 'linear'} (8 s)
+  Naive Bayes   CV acc 37.3 | val 32.0 | test acc 34.2 bacc 34.0 auc 56.8 | {'distribution': 'kernel', 'kernel': 'triangle'} (842 s)
+  KNN           CV acc 39.3 | val 39.3 | test acc 46.5 bacc 46.5 auc 67.6 | {'k': 274, 'metric': 'cosine', 'weight': 'squared_inverse'} (139 s)
+  SVM           CV acc 41.1 | val 41.6 | test acc 41.9 bacc 41.8 auc 59.4 | {'kernel': 'linear', 'C': 0.019008163023264267, 'kernel_scale': 0.12418422823652664} (1461 s)
+  EL            CV acc 39.1 | val 39.9 | test acc 42.2 bacc 42.1 auc 58.3 | {'method': 'GradBoost', 'n_learners': 158, 'max_splits': 1, 'learning_rate': 0.7216635702812186} (2658 s)
+bin_leaky_pooled: train 11488 windows / 38 subjects, val 1733, test 3445, 780 features, classes [5714, 5774]
+  BAO kept 27/780, fitness 0.3461 -> 0.1566 (624 s)
+  Tree          CV acc 72.8 | subject re-score 52.8 | val 51.1 | test acc 57.1 bacc 57.1 auc 57.5 | {'max_splits': 462, 'criterion': 'gini'} (28 s)
+  Discriminant  CV acc 61.4 | subject re-score 58.2 | val 57.4 | test acc 56.1 bacc 56.1 auc 58.2 | {'kind': 'linear'} (5 s)
+  Naive Bayes   CV acc 58.7 | subject re-score 54.1 | val 53.5 | test acc 57.9 bacc 57.9 auc 58.3 | {'distribution': 'kernel', 'kernel': 'triangle'} (348 s)
+/Users/roo/vscode/340W/cognitive-data-analysis/synthesis/.venv/lib/python3.12/site-packages/joblib/externals/loky/process_executor.py:787: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  warnings.warn(
+  KNN           CV acc 86.9 | subject re-score 54.5 | val 48.4 | test acc 59.5 bacc 59.5 auc 65.1 | {'k': 14, 'metric': 'cityblock', 'weight': 'squared_inverse'} (57 s)
+/Users/roo/vscode/340W/cognitive-data-analysis/synthesis/.venv/lib/python3.12/site-packages/joblib/externals/loky/process_executor.py:787: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  warnings.warn(
+  SVM           CV acc 70.7 | subject re-score 54.7 | val 54.2 | test acc 57.9 bacc 57.9 auc 59.2 | {'kernel': 'quadratic', 'C': 0.2461827358602665, 'kernel_scale': 2.0207086385758704} (395 s)
+  EL            CV acc 88.2 | subject re-score 55.6 | val 49.3 | test acc 60.6 bacc 60.5 auc 66.3 | {'method': 'AdaBoost', 'n_learners': 348, 'max_splits': 353, 'learning_rate': 0.6063565716118655} (2356 s)
+shin3_leaky_pooled: train 4562 windows / 18 subjects, val 802, test 1356, 780 features, classes [1534, 1519, 1509]
+  BAO kept 78/780, fitness 0.5556 -> 0.5212 (222 s)
+  Tree          CV acc 46.8 | subject re-score 37.1 | val 36.2 | test acc 37.6 bacc 37.6 auc 54.9 | {'max_splits': 171, 'criterion': 'gini'} (31 s)
+  Discriminant  CV acc 45.0 | subject re-score 40.2 | val 35.5 | test acc 38.7 bacc 38.7 auc 56.9 | {'kind': 'linear'} (6 s)
+  Naive Bayes   CV acc 41.0 | subject re-score 38.3 | val 35.4 | test acc 37.2 bacc 37.1 auc 53.1 | {'distribution': 'kernel', 'kernel': 'box'} (129 s)
+  KNN           CV acc 51.0 | subject re-score 36.0 | val 36.7 | test acc 38.9 bacc 39.0 auc 54.9 | {'k': 11, 'metric': 'cityblock', 'weight': 'squared_inverse'} (23 s)
+  SVM           CV acc 48.9 | subject re-score 40.7 | val 37.2 | test acc 38.9 bacc 38.9 auc 55.5 | {'kernel': 'cubic', 'C': 1.7325116173601056, 'kernel_scale': 3.8775863478566372} (153 s)
+  EL            CV acc 54.3 | subject re-score 40.9 | val 37.4 | test acc 39.4 bacc 39.4 auc 57.7 | {'method': 'AdaBoost', 'n_learners': 158, 'max_splits': 100, 'learning_rate': 0.09206997814719421} (3303 s)
+cog3_leaky_pooled: train 12673 windows / 20 subjects, val 1804, test 3798, 780 features, classes [4180, 4238, 4255]
+  BAO kept 30/780, fitness 0.5141 -> 0.2395 (698 s)
+  Tree          CV acc 64.2 | subject re-score 34.3 | val 31.0 | test acc 42.0 bacc 41.9 auc 58.1 | {'max_splits': 685, 'criterion': 'entropy'} (49 s)
+  Discriminant  CV acc 46.6 | subject re-score 37.2 | val 40.1 | test acc 39.1 bacc 39.0 auc 57.3 | {'kind': 'quadratic'} (6 s)
+/Users/roo/vscode/340W/cognitive-data-analysis/synthesis/.venv/lib/python3.12/site-packages/joblib/externals/loky/process_executor.py:787: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  warnings.warn(
+  Naive Bayes   CV acc 43.5 | subject re-score 36.0 | val 36.9 | test acc 39.6 bacc 39.5 auc 58.2 | {'distribution': 'kernel', 'kernel': 'triangle'} (475 s)
+  KNN           CV acc 79.8 | subject re-score 38.2 | val 36.0 | test acc 47.3 bacc 47.2 auc 66.3 | {'k': 14, 'metric': 'cityblock', 'weight': 'squared_inverse'} (81 s)
+  SVM           CV acc 67.9 | subject re-score 36.6 | val 36.5 | test acc 42.7 bacc 42.7 auc 57.9 | {'kernel': 'cubic', 'C': 56.27949975223138, 'kernel_scale': 1.4906288366101648} (532 s)
+  EL            CV acc 85.4 | subject re-score 37.0 | val 37.7 | test acc 48.6 bacc 48.6 auc 68.6 | {'method': 'AdaBoost', 'n_learners': 290, 'max_splits': 524, 'learning_rate': 0.657836457407568} (3564 s)

@@ -1,0 +1,19 @@
+task,rlmd_part,r2
+bin,all modes,0.189
+bin,mode 1,0.487
+bin,mode 2,0.213
+bin,mode 3,0.163
+bin,mode 4,0.048
+bin,mode 5,0.032
+shin3,all modes,0.207
+shin3,mode 1,0.502
+shin3,mode 2,0.224
+shin3,mode 3,0.18
+shin3,mode 4,0.071
+shin3,mode 5,0.059
+cog3,all modes,0.192
+cog3,mode 1,0.496
+cog3,mode 2,0.221
+cog3,mode 3,0.163
+cog3,mode 4,0.048
+cog3,mode 5,0.03

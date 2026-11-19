@@ -20,6 +20,10 @@ from .remote import fetch_member, open_zip
 sys.path.insert(0, str(sources.REPO / "eeg-analysis"))
 from eegrepro import data as shin_data  # noqa: E402  (validated loader from the Shin reproduction)
 
+# eegrepro reads eeg-analysis/"Cleaned Data Old"/ (the full archive its own pipeline needs);
+# this pipeline fetches only the n-back files, into sources.SHIN_DIR (stage 1).
+shin_data.DATA_DIR = sources.SHIN_DIR
+
 mne.set_log_level("ERROR")
 
 
@@ -84,13 +88,19 @@ def shin_session_runs(subject: str) -> list[list[Run]]:
 # --------------------------------------------------------------------------
 def cog_fetch(subject: int, dest: Path) -> Path:
     """Fetch one subject's n-back .set/.fdt files (18 files) from the v4 archive into
-    dest/sub-XX/ses-SY/eeg/. Archives 3-29 nest an extra sub-XX/ folder; 1-2 do not."""
+    dest/sub-XX/ses-SY/eeg/. Archives 3-29 nest an extra sub-XX/ folder; 1-2 do not.
+
+    Files appear only after their CRC-32 check, so when all 18 exist nothing is
+    downloaded and the archive is not opened (no network needed)."""
+    root = dest / f"sub-{subject:02d}"
+    if all((root / ses / "eeg" / f"{task}{ext}").exists()
+           for ses in sources.COG_SESSIONS for task in sources.COG_TASKS for ext in (".set", ".fdt")):
+        return root
     url = sources.COG_URL.format(subject)
     z = open_zip(url)
     members = [i for i in z.infolist()
                if Path(i.filename).stem in sources.COG_TASKS and i.filename.endswith((".set", ".fdt"))]
     assert len(members) == 18, (subject, len(members))
-    root = dest / f"sub-{subject:02d}"
     for info in members:
         p = Path(info.filename)
         fetch_member(url, z, info, root / p.parts[-3] / "eeg" / p.name)

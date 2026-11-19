@@ -1,0 +1,14 @@
+/Users/roo/vscode/340W/cognitive-data-analysis/analysis/scripts/06_eegnet.py:40: DeprecationWarning: pyriemann.utils.base is deprecated and will be removed in 0.14.0; use pyriemann.geometry.base instead.
+  from pyriemann.utils.base import invsqrtm
+  bin seed 0: best epoch 5 of 20, val acc 65.2 (225 s)
+  bin seed 1: best epoch 3 of 18, val acc 70.0 (380 s)
+  bin seed 2: best epoch 10 of 25, val acc 70.6 (600 s)
+bin    eegnet   val acc 70.6 | test acc 69.1 bacc 69.1 kappa 38.2 auc 75.8 (600 s, mps)
+  shin3 seed 0: best epoch 9 of 24, val acc 48.4 (106 s)
+  shin3 seed 1: best epoch 9 of 24, val acc 45.4 (8561 s)
+  shin3 seed 2: best epoch 37 of 52, val acc 48.9 (8754 s)
+shin3  eegnet   val acc 47.1 | test acc 40.8 bacc 40.8 kappa 11.2 auc 62.8 (8754 s, mps)
+  cog3 seed 0: best epoch 6 of 21, val acc 48.5 (250 s)
+  cog3 seed 1: best epoch 4 of 19, val acc 51.8 (447 s)
+  cog3 seed 2: best epoch 11 of 26, val acc 51.4 (717 s)
+cog3   eegnet   val acc 52.2 | test acc 50.1 bacc 50.1 kappa 25.2 auc 67.6 (717 s, mps)

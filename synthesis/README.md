@@ -167,16 +167,19 @@ Three earlier rules interpolated real channels. They are recorded here because t
 
 ## Workflow
 
-Python 3.12 with the packages in [requirements.txt](requirements.txt):
+From a fresh clone, `python run_pipeline.py` at the repository root runs every stage below, together with eeg-load and analysis ([root README](../README.md)). It uses one environment for the whole repository: `.venv/` at the root, with Python 3.12 and the pinned [../requirements.txt](../requirements.txt). [requirements.txt](requirements.txt) here lists this project's direct dependencies. To run stages by hand, from `synthesis/`:
 
 ```bash
-uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt
-.venv/bin/python -m pytest -q tests
-.venv/bin/python scripts/00_cogbci_notebook.py
-.venv/bin/python scripts/01_fetch.py all --jobs 6        # ~12 GB of downloads; resumable
-.venv/bin/python scripts/02_harmonize.py all --jobs 6    # ~1 h on 8 cores; per-subject cache
-.venv/bin/python scripts/03_table.py
-.venv/bin/python scripts/04_viability.py
+../.venv/bin/python -m pytest -q tests
+../.venv/bin/python scripts/00_cogbci_notebook.py
+../.venv/bin/python scripts/01_fetch.py shin                # 2.3 GB; resumable, CRC-checked
+../.venv/bin/python scripts/01_fetch.py cog --jobs 6        # 9.4 GB; resumable, CRC-checked
+../.venv/bin/python scripts/02_harmonize.py shin --jobs 6   # ~1.2 GB RAM per worker
+../.venv/bin/python scripts/02_harmonize.py cog --jobs 4    # ~2.6 GB RAM per worker; ~1 h on 8 cores
+../.venv/bin/python scripts/03_table.py
+../.venv/bin/python scripts/04_viability.py
+../.venv/bin/python scripts/05_rlmd_pilot.py
+../.venv/bin/python scripts/cogbci_scan_events.py > results/cogbci_nback_events.jsonl
 ```
 
 Stage 2 reuses Shin's validated loader from [eeg-analysis/eegrepro/](../eeg-analysis/eegrepro/). `data/`, `cache/` and `eeg-analysis/Cleaned Data/` are git-ignored. The CSV is 65 MB, over GitHub's 50 MB warning size; commit it with Git LFS, or regenerate it from stages 1–3.

@@ -4,43 +4,17 @@ import io
 import json
 import sys
 import tempfile
-import urllib.request
 import zipfile
 from pathlib import Path
 
 import mne
 import numpy as np
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from nbackjoin.remote import HTTPRange  # noqa: E402  (range reads with retries)
+
 mne.set_log_level("ERROR")
 REC = "https://zenodo.org/records/7413650/files/sub-{:02d}.zip?download=1"
-
-
-class HTTPRange(io.RawIOBase):
-    def __init__(self, url):
-        self.url, self.pos = url, 0
-        req = urllib.request.Request(url, method="HEAD")
-        with urllib.request.urlopen(req) as r:
-            self.size = int(r.headers["Content-Length"])
-            self.url = r.url
-
-    def seekable(self): return True
-    def readable(self): return True
-    def tell(self): return self.pos
-
-    def seek(self, off, whence=0):
-        self.pos = {0: off, 1: self.pos + off, 2: self.size + off}[whence]
-        return self.pos
-
-    def readinto(self, b):
-        n = min(len(b), self.size - self.pos)
-        if n <= 0:
-            return 0
-        req = urllib.request.Request(self.url, headers={"Range": f"bytes={self.pos}-{self.pos + n - 1}"})
-        with urllib.request.urlopen(req) as r:
-            data = r.read()
-        b[:len(data)] = data
-        self.pos += len(data)
-        return len(data)
 
 
 def scan(sub):

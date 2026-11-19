@@ -4,7 +4,8 @@ Writes cache/windows/<subject>.npz with
   x     (n_windows, 26, 800) float32, µV, 200 Hz, the 26 shared channels
   meta  JSON list of per-window metadata
   qa    JSON list of per-session preprocessing QA
-COG-BCI subjects are streamed from Zenodo and their raw files deleted after use.
+COG-BCI subjects are read from data/cogbci/ (fetched first if a file is missing).
+Exits non-zero if any subject fails.
 
 usage: 02_harmonize.py [shin|cog|all] [--jobs N] [--subjects ...]
 """
@@ -74,6 +75,8 @@ def main():
                 failed.append(futs[f])
                 print("FAILED", futs[f], traceback.format_exc(), flush=True)
     print("failed:", failed)
+    if failed:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

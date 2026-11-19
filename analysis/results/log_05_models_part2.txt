@@ -1,0 +1,8 @@
+bin    rf       CV bacc 70.8 | val acc 70.7 | test acc 70.6 bacc 70.6 kappa 41.2 auc 77.5 | {'max_features': 0.1, 'min_samples_leaf': 1} (745 s)
+  warnings.warn(
+bin    xgb      CV bacc 71.4 | val acc 70.1 | test acc 69.4 bacc 69.4 kappa 38.7 auc 77.4 | {'max_depth': 3, 'learning_rate': 0.05} (151 s)
+shin3  rf       CV bacc 50.2 | val acc 54.0 | test acc 48.4 bacc 48.4 kappa 22.6 auc 68.4 | {'max_features': 'sqrt', 'min_samples_leaf': 10} (188 s)
+  warnings.warn(
+shin3  xgb      CV bacc 50.1 | val acc 53.7 | test acc 49.9 bacc 49.8 kappa 24.8 auc 68.4 | {'max_depth': 6, 'learning_rate': 0.05} (320 s)
+cog3   rf       CV bacc 46.6 | val acc 47.5 | test acc 51.6 bacc 51.5 kappa 27.3 auc 71.5 | {'max_features': 'sqrt', 'min_samples_leaf': 10} (815 s)
+cog3   xgb      CV bacc 46.2 | val acc 48.7 | test acc 50.5 bacc 50.5 kappa 25.8 auc 69.3 | {'max_depth': 3, 'learning_rate': 0.05} (727 s)

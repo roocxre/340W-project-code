@@ -1,0 +1,31 @@
+task,model,group,label,dev_cv_acc,dev_cv,val_bacc,vote_member,gate,test_acc,test_bacc,bacc_lo,bacc_hi,test_kappa,test_auc,subj_acc_sd,subj_above_chance,smooth20_bacc,smooth20_auc,diff_vs_eegnet,diff_vs_eegnet_lo,diff_vs_eegnet_hi,diff_vs_y-corrected,diff_vs_y-corrected_lo,diff_vs_y-corrected_hi,best_by_val
+bin,y-leaky,baseline,"Yedukondalu ensemble, leaky CV [Ensemble (EL)]",88.17,window 10-fold,49.55,False,,60.55,60.55,52.15,72.23,21.1,66.27,14.31,10/11,61.35,66.83,,,,,,,False
+bin,y-corrected,baseline,"Yedukondalu ensemble, corrected CV [Ensemble (EL)]",59.41,subject 10-fold,55.83,False,,61.86,61.83,53.15,73.03,23.68,68.98,14.67,10/11,62.06,70.02,-7.27,-13.79,-0.98,,,,False
+bin,lr,baseline,Logistic regression,71.07,subject 5-fold,68.41,False,,68.8,68.79,58.47,77.49,37.58,75.76,12.55,10/11,73.46,80.49,-0.31,-3.53,3.5,6.96,-0.53,15.31,False
+bin,eegnet,baseline,EEGNet (raw EEG),,,70.62,False,,69.09,69.1,60.5,76.81,38.19,75.84,12.51,10/11,70.73,80.11,,,,7.27,0.98,13.79,False
+bin,svm,candidate,RBF SVM,71.47,subject 5-fold,69.7,True,True,69.64,69.62,59.64,78.05,39.26,76.63,12.28,10/11,74.12,81.35,0.52,-2.15,3.68,7.79,0.56,15.62,False
+bin,mlp,candidate,MLP,66.41,subject 5-fold,65.17,True,True,65.28,65.32,55.68,76.31,30.62,70.96,13.78,10/11,67.43,74.42,-3.78,-8.59,1.78,3.49,-1.24,9.11,False
+bin,rf,candidate,Random forest,70.81,subject 5-fold,70.79,True,True,70.6,70.58,58.83,81.67,41.18,77.48,15.22,10/11,72.12,80.41,1.48,-3.03,6.4,8.75,2.07,15.65,False
+bin,xgb,candidate,XGBoost,71.38,subject 5-fold,70.09,True,True,69.38,69.36,58.87,79.05,38.74,77.4,13.45,10/11,72.82,81.21,0.26,-3.15,3.8,7.53,0.98,14.27,False
+bin,riemann,candidate,Riemannian tangent space,69.57,subject 5-fold,70.63,True,True,70.25,70.25,61.84,77.88,40.5,77.16,11.04,10/11,75.16,81.07,1.15,-1.19,4.39,8.42,2.52,14.59,False
+bin,vote,candidate,Gated soft vote,,,72.16,False,,71.38,71.39,60.07,81.85,42.77,78.99,14.41,10/11,75.37,82.69,2.28,-1.53,6.85,9.56,3.27,16.61,True
+shin3,y-leaky,baseline,"Yedukondalu ensemble, leaky CV [Ensemble (EL)]",54.25,window 10-fold,37.45,False,,39.38,39.4,36.1,42.85,9.09,57.72,4.19,5/5,38.16,58.4,,,,,,,False
+shin3,y-corrected,baseline,"Yedukondalu ensemble, corrected CV [Ensemble (EL)]",41.89,subject 10-fold,34.44,False,,38.64,38.61,36.55,40.62,7.96,56.1,2.77,5/5,38.52,56.47,-2.17,-10.63,5.24,,,,False
+shin3,lr,baseline,Logistic regression,50.15,subject 5-fold,50.56,False,,48.67,48.67,45.54,52.27,23.01,68.02,4.31,5/5,51.72,71.4,7.89,2.04,13.03,10.06,6.23,14.54,False
+shin3,eegnet,baseline,EEGNet (raw EEG),,,47.21,False,,40.78,40.78,35.12,48.95,11.18,62.78,9.07,4/5,39.1,63.11,,,,2.17,-5.24,10.63,False
+shin3,svm,candidate,RBF SVM,51.14,subject 5-fold,52.92,True,True,49.93,49.91,46.66,54.52,24.88,67.91,5.07,5/5,49.33,68.82,9.13,4.97,12.79,11.3,6.48,16.66,False
+shin3,mlp,candidate,MLP,46.32,subject 5-fold,46.19,True,True,45.21,45.21,42.99,47.5,17.82,63.88,2.97,5/5,50.38,66.72,4.43,-2.25,10.51,6.6,4.53,8.95,False
+shin3,rf,candidate,Random forest,50.31,subject 5-fold,54.05,True,True,48.38,48.37,44.15,53.71,22.57,68.45,6.06,5/5,51.77,70.63,7.59,3.83,11.2,9.76,3.84,15.92,True
+shin3,xgb,candidate,XGBoost,50.18,subject 5-fold,53.81,True,True,49.85,49.85,47.5,52.74,24.78,68.41,3.38,5/5,51.35,71.19,9.07,3.49,13.71,11.24,7.34,15.19,False
+shin3,riemann,candidate,Riemannian tangent space,49.01,subject 5-fold,47.07,True,True,46.61,46.6,42.51,50.85,19.91,65.08,5.39,5/5,48.59,66.55,5.82,0.96,11.51,7.99,3.45,12.53,False
+shin3,vote,candidate,Gated soft vote,,,51.93,False,,50.74,50.73,48.1,53.74,26.11,69.79,3.43,5/5,54.88,73.01,9.95,4.07,15.11,12.13,9.11,15.92,False
+cog3,y-leaky,baseline,"Yedukondalu ensemble, leaky CV [Ensemble (EL)]",85.4,window 10-fold,37.79,False,,48.58,48.56,32.78,70.72,22.85,68.58,26.32,5/6,49.0,69.52,,,,,,,False
+cog3,y-corrected,baseline,"Yedukondalu ensemble, corrected CV [Ensemble (EL)]",39.15,subject 10-fold,40.05,False,,42.15,42.08,33.9,53.13,13.17,58.35,14.02,4/6,45.56,59.94,-8.0,-14.26,-3.3,,,,False
+cog3,lr,baseline,Logistic regression,46.58,subject 5-fold,46.09,False,,48.79,48.73,38.51,59.65,23.17,67.04,14.99,5/6,51.64,69.9,-1.35,-3.25,0.68,6.66,1.93,12.5,False
+cog3,eegnet,baseline,EEGNet (raw EEG),,,52.34,False,,50.13,50.08,40.58,59.66,25.17,67.59,13.04,5/6,54.08,71.25,,,,8.0,3.3,14.26,False
+cog3,svm,candidate,RBF SVM,48.05,subject 5-fold,46.42,True,True,49.32,49.25,37.47,61.46,23.95,66.1,17.04,4/6,51.88,68.57,-0.83,-4.91,2.35,7.17,0.63,14.11,False
+cog3,mlp,candidate,MLP,41.48,subject 5-fold,43.86,True,True,48.34,48.32,33.84,69.43,22.52,66.65,26.31,4/6,49.36,69.23,-1.76,-10.7,11.24,6.24,-1.59,16.67,False
+cog3,rf,candidate,Random forest,46.64,subject 5-fold,47.76,False,False,51.58,51.51,35.61,71.1,27.34,71.46,24.89,5/6,52.58,73.62,1.43,-5.57,11.82,9.44,0.67,18.63,False
+cog3,xgb,candidate,XGBoost,46.2,subject 5-fold,48.89,True,True,50.53,50.47,35.88,66.44,25.78,69.27,21.8,4/6,51.96,71.49,0.39,-6.39,7.99,8.39,0.14,16.28,True
+cog3,riemann,candidate,Riemannian tangent space,44.89,subject 5-fold,47.14,False,False,46.84,46.8,38.44,59.39,20.24,64.02,14.99,5/6,49.93,66.07,-3.28,-8.03,1.34,4.72,2.57,7.23,False
+cog3,vote,candidate,Gated soft vote,,,46.4,False,,50.61,50.56,35.48,70.48,25.91,68.75,25.64,4/6,52.28,70.95,0.48,-7.39,12.03,8.48,-0.63,18.7,False

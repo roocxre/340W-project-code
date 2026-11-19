@@ -83,17 +83,17 @@ The first version used the literal reading: 10 agents, continuous positions, and
 
 ## Workflow
 
-Python 3.12 with the packages in [requirements.txt](requirements.txt):
+From a fresh clone, `python run_pipeline.py` at the repository root runs every stage below, together with synthesis and analysis ([root README](../README.md)). It uses one environment for the whole repository: `.venv/` at the root, with Python 3.12 and the pinned [../requirements.txt](../requirements.txt). [requirements.txt](requirements.txt) here lists this project's direct dependencies. To run stages by hand, from `eeg-load/`:
 
 ```
-uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt
-.venv/bin/python -m pytest tests
-.venv/bin/python scripts/01_features.py     # about 25 min on 8 cores
-.venv/bin/python scripts/02_overall.py
-.venv/bin/python scripts/03_leadwise.py
-.venv/bin/python scripts/04_tuning.py
-.venv/bin/python scripts/05_figures.py
-.venv/bin/python scripts/06_report.py
+../.venv/bin/python scripts/00_fetch.py all  # MAT from PhysioNet; STEW from its zip (see below)
+../.venv/bin/python -m pytest tests
+../.venv/bin/python scripts/01_features.py     # about 45 min on 8 cores
+../.venv/bin/python scripts/02_overall.py
+../.venv/bin/python scripts/03_leadwise.py
+../.venv/bin/python scripts/04_tuning.py
+../.venv/bin/python scripts/05_figures.py
+../.venv/bin/python scripts/06_report.py
 ```
 
-Datasets go in `data/eegmat/` and `data/STEW Dataset/`; features are cached in `cache/`. Both are git-ignored.
+Datasets go in `data/eegmat/` and `data/STEW Dataset/`; features are cached in `cache/`. Both are git-ignored. `00_fetch.py` downloads MAT and checks every file against PhysioNet's SHA-256 list ([reference/eegmat_SHA256SUMS.txt](reference/eegmat_SHA256SUMS.txt)). IEEE DataPort serves STEW only to logged-in users (a free account), so download `STEW Dataset.zip` from the [dataset page](https://ieee-dataport.org/open-access/stew-simultaneous-task-eeg-workload-dataset) by hand. `00_fetch.py` finds it in `data/` or `~/Downloads/` (or takes `--stew PATH`), unpacks it, and checks it against the copy behind these results ([reference/STEW_SHA256SUMS.txt](reference/STEW_SHA256SUMS.txt)).
