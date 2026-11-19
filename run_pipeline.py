@@ -540,7 +540,8 @@ def main():
     def on_term(signum, frame):        # `kill` / logout: stop the running stage cleanly, like Ctrl-C
         raise KeyboardInterrupt
     for sig in ("SIGTERM", "SIGHUP"):
-        if hasattr(signal, sig):
+        # keep a hang-up ignored when started under nohup, so a dropped SSH session doesn't stop it
+        if hasattr(signal, sig) and signal.getsignal(getattr(signal, sig)) is not signal.SIG_IGN:
             signal.signal(getattr(signal, sig), on_term)
 
     t_start = time.time()
