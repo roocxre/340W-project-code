@@ -4,7 +4,7 @@
 |---|---|
 | `gait-analysis/` | Parent Paper 1 codebase |
 | `eeg-analysis/` | Parent Paper 2 codebase (Shin et al. 2018 reproduction) |
-| `eeg-load/` | Parent Paper 3 codebase (Yedukondalu et al. 2025 reproduction on MAT and STEW) |
+| `eeg-load/` | Parent Paper 3 codebase (Yedukondalu et al. 2025 reproduction on MAT and STEW); its `loadrepro` package provides the Yedukondalu baselines in `analysis/` |
 | `synthesis/` | Shin 2018 + COG-BCI joined into one n-back feature table ([README](synthesis/README.md)) |
 | `analysis/` | 70/20/10 split, EDA and load classifiers on the joined table ([README](analysis/README.md)) |
 | `docs/` | paper draft |
@@ -19,23 +19,16 @@ cd 340W-project-code
 python run_pipeline.py            # Windows: py run_pipeline.py   (Linux/macOS may need python3)
 ```
 
-That single command downloads the datasets, joins them and runs every analysis stage of `eeg-load/`, `synthesis/` and `analysis/`, unattended. It takes about a day on an 8-core machine. Without git, use **Code → Download ZIP** on the GitHub page and run the same command in the unpacked folder; nothing depends on `.git`.
+That single command downloads the datasets, joins them and runs every stage of `synthesis/` and `analysis/`, unattended. It takes about a day on an 8-core machine. Without git, use **Code → Download ZIP** on the GitHub page and run the same command in the unpacked folder; nothing depends on `.git`.
 
-### The one manual step: STEW
+### Data
 
-STEW (used by `eeg-load/`) is served by IEEE DataPort to logged-in users only, so no script can download it:
-
-1. Sign in (a free IEEE account is enough) at [the STEW dataset page](https://ieee-dataport.org/open-access/stew-simultaneous-task-eeg-workload-dataset).
-2. Download `STEW Dataset.zip` (52 MB) and leave it in your Downloads folder.
-
-The script finds the zip there, or in `eeg-load/data/`, or wherever `--stew PATH` points. It checks for STEW before anything long starts, and stops with these instructions if the zip is missing. Every other dataset is downloaded automatically and verified (CRC-32 or SHA-256):
+Both datasets are downloaded automatically, only their n-back files, and every file is checked against its CRC-32 in the source archive:
 
 | Dataset | Source | Used by | Size |
 |---|---|---|---|
 | Shin 2018, n-back files only | TU Berlin | synthesis, analysis | 2.3 GB |
 | COG-BCI v4, n-back files only | Zenodo record 7413650 | synthesis, analysis | 9.4 GB |
-| MAT (eegmat 1.0.0) | PhysioNet | eeg-load | 175 MB |
-| STEW | IEEE DataPort (manual, above) | eeg-load | 52 MB |
 
 ### Requirements
 
@@ -45,21 +38,20 @@ The script finds the zip there, or in `eeg-load/data/`, or wherever `--stew PATH
 | Disk | about 30 GB free: 13 GB of raw EEG, 2 GB of harmonized windows, caches, and the environment |
 | Memory | 16 GB recommended. Parallel workers are sized to the RAM, so less memory means slower, not failing. |
 | Network | only for the download stages at the start (12 GB, typically 1-2 h; Zenodo can be slow) |
-| Time | about 23 h on an 8-core Apple M1. `python run_pipeline.py --list` shows the time per stage. |
+| Time | about 20 h on an 8-core Apple M1. `python run_pipeline.py --list` shows the time per stage. |
 
 Keep the machine powered and awake. The script blocks idle sleep while it runs (caffeinate on macOS, SetThreadExecutionState on Windows, systemd-inhibit on Linux). A laptop that is closed or runs out of battery will still stop.
 
 ### What it runs, in order
 
-1. **Preflight.** Checks the platform, free disk, RAM, every download server, and STEW.
+1. **Preflight.** Checks the platform, free disk, RAM and both download servers.
 2. **Environment.** Creates `.venv/` with Python 3.12 and `requirements.txt`, via [uv](https://docs.astral.sh/uv/), which is installed into `.pipeline/tools/`. Then checks that every package imports.
-3. **Unit tests** of all three projects.
-4. **All downloads:** MAT and STEW, the COG-BCI notebook, Shin, COG-BCI, and the COG-BCI event scan.
-5. **eeg-load:** R-LMD features, overall and lead-wise BAO + optimized classifiers, the tuning sweep, figures, and `paper_vs_ours.md`.
-6. **synthesis:** harmonization of both datasets, `nback_features.csv`, the viability checks, and the R-LMD pilot.
-7. **analysis:** split, R-LMD features, the feature models, EEGNet, EDA, the Yedukondalu baselines (both protocols, three tasks), and the evaluation.
+3. **Unit tests** of synthesis, analysis and eeg-load's `loadrepro` (the R-LMD port, BAO and the optimizable classifiers).
+4. **All downloads:** the COG-BCI notebook, Shin, COG-BCI, and the COG-BCI event scan.
+5. **synthesis:** harmonization of both datasets, `nback_features.csv`, the viability checks, and the R-LMD pilot.
+6. **analysis:** split, R-LMD features, the feature models, EEGNet, EDA, the Yedukondalu baselines (eeg-load's pipeline run on the joined data, both protocols, three tasks), and the evaluation.
 
-Each stage writes its output to the console and to the same log file as the committed one, for example `analysis/results/log_04_baselines.txt`. A run log of everything goes to `.pipeline/logs/`. At the end, the script checks that every result file under the three `results/` folders was rewritten, and lists any that were not.
+Each stage writes its output to the console and to the same log file as the committed one, for example `analysis/results/log_04_baselines.txt`. A run log of everything goes to `.pipeline/logs/`. At the end, the script checks that every result file under `synthesis/results/` and `analysis/results/` was rewritten, and lists any that were not.
 
 ### Interruptions and options
 
@@ -73,7 +65,6 @@ Finished stages are recorded in `.pipeline/state.json`. **If the run stops for a
 | `python run_pipeline.py --only synthesis:04_viability` | reruns just that stage |
 | `python run_pipeline.py --redo` | reruns everything |
 | `python run_pipeline.py --cpus 4` | uses at most 4 cores |
-| `python run_pipeline.py --stew ~/path/to/STEW\ Dataset.zip` | STEW from somewhere else |
 | `python run_pipeline.py --dry-run` | prints the commands without running them |
 
 ### How close the numbers will be
@@ -83,6 +74,6 @@ Every random step is seeded and every package version is pinned, so a run on ano
 ### Not regenerated by the script
 
 - **`docs/research-paper-draft.qmd` / `.pdf`.** The paper is written by hand; its tables are typed into the source. Rendering it needs R, knitr, kableExtra, Quarto and LaTeX, none of which the pipeline uses.
-- **`eeg-analysis/`, `eeg-back/`, `gait-analysis/`.** These are the other parent-paper reproductions. Of them, the pipeline uses only `eeg-analysis/eegrepro`'s Shin loader.
+- **`eeg-load/results/`, `eeg-analysis/`, `eeg-back/`, `gait-analysis/`.** These are the parent-paper reproductions, including eeg-load's on MAT and STEW. The pipeline uses only their code: `eeg-load/loadrepro` for the R-LMD features and Yedukondalu baselines, and `eeg-analysis/eegrepro` for the Shin loader.
 - **`synthesis/scripts/shin_nback_signal.py`**, a dataset-selection check in [PROVENANCE.md](synthesis/PROVENANCE.md). It reads the AAR-cleaned Shin data that only `eeg-analysis/`'s own pipeline produces.
 - **`analysis/scripts/run_rest.sh` and `analysis/results/log_run_rest.txt`.** This was the earlier shell driver for the analysis stages, superseded by `run_pipeline.py`. It runs the same commands.

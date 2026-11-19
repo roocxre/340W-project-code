@@ -1,12 +1,11 @@
 # Exact versions of every package behind the committed results (Python 3.12).
 # run_pipeline.py installs these into .venv automatically; no manual step is needed.
 # Direct dependencies: numpy scipy pandas scikit-learn matplotlib mne mne-icalabel
-# onnxruntime python-picard mat-io numba joblib optuna pyriemann torch xgboost asrpy
+# onnxruntime python-picard mat-io numba joblib optuna pyriemann torch xgboost
 # pytest psutil. Everything else is pinned transitively.
 alembic==1.20.1
 array-api-compat==1.16.0
 array-api-extra==0.11.5
-asrpy==0.0.8
 certifi==2026.10.23
 charset-normalizer==3.5.2
 cloudpickle==3.1.2

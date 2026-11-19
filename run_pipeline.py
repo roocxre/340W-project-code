@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Reproduce every result in eeg-load/, synthesis/ and analysis/ from the raw datasets.
+"""Reproduce every result in synthesis/ and analysis/ from the raw datasets.
 
     python run_pipeline.py                 # everything, unattended (~1 day); safe to rerun
     python run_pipeline.py --list          # stages, their status and typical run times
     python run_pipeline.py --setup-only    # checks + environment + unit tests, then stop
 
 Needs only Python 3.8+ to start. It installs everything else itself:
-  1. preflight: platform, free disk, RAM, network access to every data source, and the one
-     dataset that cannot be downloaded by script (STEW, behind a free IEEE DataPort login);
+  1. preflight: platform, free disk, RAM, and network access to every data source;
   2. environment: .venv/ with Python 3.12 and the exact packages in requirements.txt
      (via uv, which is installed into .pipeline/tools/ if it is not already available);
-  3. unit tests of all three projects;
-  4. every data download, then every analysis stage, in dependency order.
+  3. unit tests of synthesis, analysis and eeg-load's loadrepro (R-LMD, BAO and the
+     optimizable classifiers that analysis uses for the Yedukondalu baselines);
+  4. every data download (Shin 2018, COG-BCI), then every analysis stage, in order.
+
+eeg-load's own reproduction on MAT and STEW is not part of it: only its code is used.
 
 Each finished stage is recorded in .pipeline/state.json, so after an interruption (crash,
 reboot, Ctrl-C) running the same command again resumes at the stage that did not finish.
@@ -20,7 +22,7 @@ Output of every stage goes to the console and to the stage's log file, the same 
 as the committed ones (e.g. analysis/results/log_04_baselines.txt).
 
 Options: --from STAGE (rerun STAGE and everything after it), --only STAGE [...], --redo
-(rerun everything), --stew PATH (STEW zip or folder), --cpus N (use at most N cores),
+(rerun everything), --cpus N (use at most N cores),
 --dry-run (print the commands only), --skip-checks (do not stop on platform/disk checks).
 """
 import argparse
@@ -51,12 +53,11 @@ IS_WIN = os.name == "nt"
 SOURCES = {   # every URL the pipeline downloads from (HEAD-checked in preflight)
     "Shin 2018 (TU Berlin)": "https://doc.ml.tu-berlin.de/simultaneous_EEG_NIRS/EEG/EEG_01-26_MATLAB.zip",
     "COG-BCI v4 (Zenodo)": "https://zenodo.org/records/7413650/files/sub-01.zip?download=1",
-    "MAT / eegmat (PhysioNet)": "https://physionet.org/files/eegmat/1.0.0/RECORDS",
 }
 
 # Packages imported somewhere in the pipeline: checked right after installation.
 IMPORTS = ("numpy scipy pandas sklearn matplotlib mne mne_icalabel onnxruntime picard matio numba "
-           "joblib optuna pyriemann torch xgboost asrpy pytest psutil")
+           "joblib optuna pyriemann torch xgboost pytest psutil")
 
 
 # --------------------------------------------------------------------------- output
@@ -154,13 +155,11 @@ def keep_awake():
 
 
 # --------------------------------------------------------------------------- preflight
-NEEDS_STEW = ("fetch:mat-stew",)
 NEEDS_NET = ("fetch:",)
 
 
 def preflight(args, res, todo):
     banner("Preflight checks")
-    need_stew = any(s.name in NEEDS_STEW for s in todo)
     need_net = any(s.name.startswith(NEEDS_NET) for s in todo) or not venv_python().exists()
     problems, warnings = [], []
     mach = platform.machine().lower()
@@ -185,7 +184,7 @@ def preflight(args, res, todo):
 
     free = shutil.disk_usage(REPO).free / 2 ** 30
     have = sum(du(REPO / p) for p in ("synthesis/data", "eeg-analysis/Cleaned Data", "synthesis/cache",
-                                       "eeg-load/data", "analysis/cache", ".venv")) / 2 ** 30
+                                       "analysis/cache", ".venv")) / 2 ** 30
     need = max(3.0, NEED_DISK_GB - have)
     say(f"disk     {free:.0f} GB free, about {need:.0f} GB still needed")
     if free < need:
@@ -208,20 +207,11 @@ def preflight(args, res, todo):
         if err:
             problems.append(f"cannot reach {name} at {url}")
 
-    if need_stew:
-        cmd = [sys.executable, str(REPO / "eeg-load/scripts/00_fetch.py"), "--check"] + (
-            ["--stew", args.stew] if args.stew else [])
-        r = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                           errors="replace", cwd=REPO / "eeg-load")
-        say(f"data     STEW: {'found' if r.returncode == 0 else 'NOT FOUND'}")
-        if r.returncode != 0:
-            problems.append("STEW dataset not found." + r.stdout.split("NOT FOUND", 1)[-1].rstrip())
-
     for w in warnings:
         say(f"WARNING  {w}")
     if problems:
         msg = "\n".join(f"  - {p}" for p in problems)
-        if args.skip_checks and not any("STEW" in p or "reach" in p for p in problems):
+        if args.skip_checks and not any("reach" in p for p in problems):
             say(f"WARNING  continuing despite (--skip-checks):\n{msg}")
         else:
             die(f"fix the following, then run the same command again:\n{msg}")
@@ -374,17 +364,13 @@ class Stage:
 
 def stages(args, res):
     J = str
-    stew = ["--stew", args.stew] if args.stew else []
-    cap = {"LOKY_MAX_CPU_COUNT": str(res.jobs(1.5))}     # eeg-load uses all cores (n_jobs=-1)
     pytest = ["-m", "pytest", "-p", "no:cacheprovider", "tests"]
     S = [
         # unit tests first: an environment problem shows up in minutes, not hours
         Stage("tests:synthesis", "synthesis", pytest + ["-q"], ".pipeline/logs/tests_synthesis.txt", 1),
-        Stage("tests:eeg-load", "eeg-load", pytest, "eeg-load/results/log_00_tests.txt", 1),
+        Stage("tests:eeg-load", "eeg-load", pytest + ["-q"], ".pipeline/logs/tests_eeg-load.txt", 1),
         Stage("tests:analysis", "analysis", pytest + ["-q"], ".pipeline/logs/tests_analysis.txt", 1),
         # every download before any long computation
-        Stage("fetch:mat-stew", "eeg-load", ["scripts/00_fetch.py", "all"] + stew,
-              "eeg-load/results/log_00_fetch.txt", 3, retries=3),
         Stage("fetch:cogbci-notebook", "synthesis", ["scripts/00_cogbci_notebook.py"],
               "synthesis/results/log_00_cogbci_notebook.txt", 1, retries=3),
         Stage("fetch:shin", "synthesis", ["scripts/01_fetch.py", "shin"],
@@ -397,19 +383,6 @@ def stages(args, res):
         Stage("fetch:cogbci-events", "synthesis", ["scripts/cogbci_scan_events.py"],
               ".pipeline/logs/cogbci_scan_events.txt", 15, aux=True,
               stdout_to="synthesis/results/cogbci_nback_events.jsonl", stdout_check=events_ok),
-        # eeg-load: reproduction of Yedukondalu et al. 2025 on MAT and STEW
-        Stage("eeg-load:01_features", "eeg-load", ["scripts/01_features.py"],
-              "eeg-load/results/log_01_features.txt", 45, env=cap),
-        Stage("eeg-load:02_overall", "eeg-load", ["scripts/02_overall.py"],
-              "eeg-load/results/log_02_overall.txt", 30, env=cap),
-        Stage("eeg-load:03_leadwise", "eeg-load", ["scripts/03_leadwise.py"],
-              "eeg-load/results/log_03_leadwise.txt", 50, env=cap),
-        Stage("eeg-load:04_tuning", "eeg-load", ["scripts/04_tuning.py"],
-              "eeg-load/results/log_04_tuning.txt", 20, env=cap),
-        Stage("eeg-load:05_figures", "eeg-load", ["scripts/05_figures.py"],
-              "eeg-load/results/log_05_figures.txt", 1),
-        Stage("eeg-load:06_report", "eeg-load", ["scripts/06_report.py"],
-              "eeg-load/results/log_06_report.txt", 1),
         # synthesis: harmonize Shin + COG-BCI and build the joined table
         Stage("synthesis:02_harmonize_shin", "synthesis",
               ["scripts/02_harmonize.py", "shin", "--jobs", J(res.jobs(1.6))],   # peak 1.2 GB/worker
@@ -535,13 +508,10 @@ def main():
     ap.add_argument("--from", dest="start", metavar="STAGE", help="rerun STAGE and every stage after it")
     ap.add_argument("--only", nargs="+", metavar="STAGE", help="run just these stages (name or prefix)")
     ap.add_argument("--redo", action="store_true", help="rerun every stage, even ones recorded as done")
-    ap.add_argument("--stew", metavar="PATH", help="'STEW Dataset.zip' or an extracted STEW folder")
     ap.add_argument("--cpus", type=int, help="use at most this many CPU threads")
     ap.add_argument("--dry-run", action="store_true", help="print what would run")
     ap.add_argument("--skip-checks", action="store_true", help="continue despite platform/disk warnings")
     args = ap.parse_args()
-    if args.stew:
-        args.stew = str(Path(args.stew).expanduser().resolve())
 
     res = Resources(args.cpus)
     all_stages = stages(args, res)
@@ -660,7 +630,7 @@ def main():
             say(f"  {p}")
     else:
         say("every committed result file was regenerated by this run")
-    say("all stages done. Results: eeg-load/results/, synthesis/results/, analysis/results/")
+    say("all stages done. Results: synthesis/results/, analysis/results/")
 
 
 NOT_REGENERATED = {  # committed files the pipeline deliberately does not rewrite (see README)
@@ -676,7 +646,7 @@ def stale_outputs(state):
         return []
     t0 = min(times)
     out = []
-    for d in ("eeg-load/results", "synthesis/results", "analysis/results"):
+    for d in ("synthesis/results", "analysis/results"):
         for p in sorted((REPO / d).rglob("*")):
             rel = p.relative_to(REPO).as_posix()
             if p.is_file() and p.name != ".DS_Store" and rel not in NOT_REGENERATED and p.stat().st_mtime < t0:

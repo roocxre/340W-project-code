@@ -167,7 +167,7 @@ Three earlier rules interpolated real channels. They are recorded here because t
 
 ## Workflow
 
-From a fresh clone, `python run_pipeline.py` at the repository root runs every stage below, together with eeg-load and analysis ([root README](../README.md)). It uses one environment for the whole repository: `.venv/` at the root, with Python 3.12 and the pinned [../requirements.txt](../requirements.txt). [requirements.txt](requirements.txt) here lists this project's direct dependencies. To run stages by hand, from `synthesis/`:
+From a fresh clone, `python run_pipeline.py` at the repository root runs every stage below, followed by analysis ([root README](../README.md)). It uses one environment for the whole repository: `.venv/` at the root, with Python 3.12 and the pinned [../requirements.txt](../requirements.txt). [requirements.txt](requirements.txt) here lists this project's direct dependencies. To run stages by hand, from `synthesis/`:
 
 ```bash
 ../.venv/bin/python -m pytest -q tests

@@ -228,7 +228,7 @@ The EDA covers train subjects only: [scripts/03_eda.py](scripts/03_eda.py), [res
 
 ## Workflow
 
-From a fresh clone, `python run_pipeline.py` at the repository root runs every stage below after the eeg-load and synthesis stages they depend on ([root README](../README.md)). It writes the same log files. It uses one environment for the whole repository: `.venv/` at the root, with Python 3.12 and the pinned [../requirements.txt](../requirements.txt). [requirements.txt](requirements.txt) here lists the packages this project adds to synthesis's. To run stages by hand, from `analysis/`:
+From a fresh clone, `python run_pipeline.py` at the repository root runs every stage below after the synthesis stages they depend on ([root README](../README.md)). It writes the same log files. It uses one environment for the whole repository: `.venv/` at the root, with Python 3.12 and the pinned [../requirements.txt](../requirements.txt). [requirements.txt](requirements.txt) here lists the packages this project adds to synthesis's. To run stages by hand, from `analysis/`:
 
 ```bash
 ../.venv/bin/python scripts/01_split.py > results/log_01_split.txt   # ~1.5 min
