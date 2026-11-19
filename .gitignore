@@ -42,8 +42,10 @@ analysis/cache/
 # run_pipeline.py: environment tools, stage state, run logs; partial outputs
 .pipeline/
 *.partial
+.claude/
 
 # paper files
 docs/
-docs/research-paper-draft.pdf
-docs/research-paper-draft.qmd
+.quarto/
+README_files/
+technique_comparison_files/
