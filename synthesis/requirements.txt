@@ -10,3 +10,5 @@ pytest
 mat-io
 numba
 joblib
+certifi
+truststore

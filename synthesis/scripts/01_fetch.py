@@ -4,7 +4,8 @@ shin  78 files (cnt/mrk/mnt_nback.mat, 26 subjects, 2.3 GB) from the 6.1 GB MATL
       into eeg-analysis/Cleaned Data/, where eegrepro's loader expects them.
 cog   522 files (zero/one/twoBACK .set/.fdt, 29 subjects x 3 sessions, ~13 GB) from the
       COG-BCI v4 subject archives into data/cogbci/.
-Files already complete are skipped; zipfile checks every member's CRC-32.
+Files already complete are skipped; every new file is checked against its CRC-32 and its
+SHA-256 in nbackjoin/data_sha256.txt.
 
 usage: 01_fetch.py [shin|cog|all] [--jobs N]
 """
@@ -19,10 +20,10 @@ from nbackjoin.remote import extract, open_zip
 
 
 def fetch_shin():
-    z = open_zip(sources.SHIN_URL)
+    z = open_zip(sources.SHIN_URL, pinned=True)
     members = [i for i in z.infolist() if "_nback.mat" in i.filename]
     assert len(members) == 78, len(members)
-    for p in extract(z, members, sources.SHIN_DIR):
+    for p in extract(z, members, sources.SHIN_DIR, sources.SHIN_URL):
         print(p.relative_to(sources.SHIN_DIR), flush=True)
     print("shin: 78 files present", flush=True)
 

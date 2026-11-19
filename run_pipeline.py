@@ -31,6 +31,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -57,7 +58,7 @@ SOURCES = {   # every URL the pipeline downloads from (HEAD-checked in preflight
 
 # Packages imported somewhere in the pipeline: checked right after installation.
 IMPORTS = ("numpy scipy pandas sklearn matplotlib mne mne_icalabel onnxruntime picard matio numba "
-           "joblib optuna pyriemann torch xgboost pytest psutil")
+           "joblib optuna pyriemann torch xgboost pytest psutil certifi truststore")
 
 
 # --------------------------------------------------------------------------- output
@@ -224,11 +225,11 @@ def preflight(args, res, todo):
         for attempt in range(3):
             err = head(url)
             if err == "certificate":
-                # This Python's trust store lacks the server's root CA (common on Windows, which adds
-                # roots lazily). Reachability is checked without verification here; downloads run in
-                # .venv with certifi's CA bundle, and tls_check() verifies that after setup.
+                # This Python's own trust store rejects the server (Windows adds roots lazily; python.org's
+                # macOS Python has none until "Install Certificates" runs). Only reachability matters here:
+                # downloads run in .venv with the system verifier and Mozilla's roots (tls_check, after setup).
                 err = head(url, verify=False)
-                note = " (certificate verified after setup, with the certifi CA bundle)"
+                note = " (certificate checked after setup)"
             if err is None:
                 break
             time.sleep(10)
@@ -260,27 +261,26 @@ def head(url, verify=True):
         return repr(e)
 
 
-def ca_bundle():
-    """certifi's CA bundle inside .venv (Mozilla's root store), or None before setup."""
-    site = VENV / ("Lib/site-packages" if IS_WIN else f"lib/python{PY_VERSION}/site-packages")
-    p = site / "certifi" / "cacert.pem"
-    return str(p) if p.exists() else None
-
-
 def tls_check(py):
-    """Verified HTTPS to every data source from .venv, as the download stages will do it."""
+    """Which trust store accepts each data source, through the same code the downloads use.
+    Informational: a source no store accepts is still downloaded, checked file by file against
+    synthesis/nbackjoin/data_sha256.txt (see nbackjoin/remote.py)."""
     code = ("import sys, urllib.request\n"
+            "from nbackjoin import remote\n"
             "for url in sys.argv[1:]:\n"
             "    try:\n"
-            "        urllib.request.urlopen(urllib.request.Request(url, method='HEAD'), timeout=60).close()\n"
-            "        print('ok    ', url)\n"
+            "        remote.urlopen(urllib.request.Request(url, method='HEAD'), timeout=60).close()\n"
+            "        print('verified by', remote.trusted_by(url), '|', url)\n"
+            "    except remote.CertificateError as e:\n"
+            "        print('NOT VERIFIED |', e)\n"
             "    except Exception as e:\n"
-            "        print('FAILED', url, repr(e)); sys.exit(1)\n")
-    say("checking verified HTTPS to the data sources from .venv")
-    p = run_quiet([py, "-c", code] + list(SOURCES.values()), env=child_env())
-    if p.returncode != 0:
-        die("a data source failed TLS verification (output above). If this network intercepts HTTPS "
-            "(a corporate proxy), set SSL_CERT_FILE to its CA bundle and run again.")
+            "        print('unreachable now |', url, repr(e))\n")
+    say("checking HTTPS certificates of the data sources from .venv")
+    p = run_quiet([py, "-c", code] + list(SOURCES.values()), env=child_env(), cwd=REPO / "synthesis")
+    if "NOT VERIFIED" in p.stdout:
+        say("WARNING  a data source's certificate is not accepted by the system trust store or Mozilla's "
+            "roots. Its downloads continue without TLS verification, and every file is checked against "
+            "its pinned SHA-256 instead, so the data is still exactly the published data.")
 
 
 def du(p):
@@ -323,7 +323,12 @@ def find_uv():
     p = run_quiet([sys.executable, "-m", "venv", TOOLS])
     if p.returncode == 0:
         tpy = tools_bin / ("python.exe" if IS_WIN else "python")
-        p = run_quiet([tpy, "-m", "pip", "install", "-q", "--disable-pip-version-check", f"uv=={UV_VERSION}"])
+        pip = [tpy, "-m", "pip", "install", "-q", "--disable-pip-version-check", f"uv=={UV_VERSION}"]
+        p = run_quiet(pip)
+        if p.returncode != 0 and CERT_ERROR.search(p.stdout):
+            # pip 24.2+ verifies with the system store only; its bundled Mozilla roots are the fallback
+            say("retrying with pip's bundled Mozilla roots")
+            p = run_quiet(pip + ["--use-deprecated=legacy-certs"])
         if p.returncode == 0 and uv.exists():
             return uv
     system_uv = shutil.which("uv")
@@ -333,6 +338,20 @@ def find_uv():
     die("could not install uv. On Debian/Ubuntu install the venv module first "
         "(sudo apt install python3-venv python3-pip), or install uv from https://docs.astral.sh/uv/ "
         "and run again.")
+
+
+CERT_ERROR = re.compile(r"certificate|UnknownIssuer|invalid peer", re.I)
+
+
+def run_uv(uv, args, env=None):
+    """uv verifies TLS with its bundled Mozilla roots. A network that intercepts HTTPS (corporate
+    proxy, antivirus) needs the system store, where its root is installed: retry with that."""
+    env = dict(os.environ if env is None else env)
+    p = run_quiet([uv] + args, env=env)
+    if p.returncode != 0 and "UV_SYSTEM_CERTS" not in env and CERT_ERROR.search(p.stdout):
+        say("uv's bundled roots rejected a certificate; retrying with the system trust store")
+        p = run_quiet([uv] + args, env=dict(env, UV_SYSTEM_CERTS="1"))
+    return p
 
 
 def env_fingerprint():
@@ -359,12 +378,12 @@ def ensure_env():
     uv = find_uv()
     env = dict(os.environ, UV_PYTHON_DOWNLOADS="automatic")
     if not VENV.exists():
-        p = run_quiet([uv, "venv", "--python", PY_VERSION, VENV], env=env)
+        p = run_uv(uv, ["venv", "--python", PY_VERSION, VENV], env)
         if p.returncode != 0:
             die("could not create .venv with uv (output above)")
         (VENV / ".run_pipeline-created").write_text("created by run_pipeline.py\n")
     say("installing requirements (first time: several minutes, ~1-4 GB of downloads)")
-    p = run_quiet([uv, "pip", "install", "--python", py, "-r", REQ], env=env)
+    p = run_uv(uv, ["pip", "install", "--python", py, "-r", REQ], env)
     if p.returncode != 0:
         die("package installation failed (output above)")
     check = ("import importlib, sys\n"
@@ -393,7 +412,6 @@ TORCH_CUDA = ("2.15.0+cu132", "https://download.pytorch.org/whl/cu132", (13, 2))
 def ensure_cuda_torch(py):
     """On Windows with an NVIDIA GPU, swap in the CUDA build of the pinned torch (EEGNet then trains
     on the GPU). Best effort: any problem leaves the CPU build in place and the run continues."""
-    import re
     if not IS_WIN or not shutil.which("nvidia-smi"):
         return
     probe = "import torch; print(torch.__version__, torch.version.cuda or '', torch.cuda.is_available())"
@@ -410,14 +428,14 @@ def ensure_cuda_torch(py):
         return
     say(f"NVIDIA GPU found: installing torch {TORCH_CUDA[0]} (CUDA build, ~3 GB) so EEGNet trains on it")
     uv = find_uv()
-    p = run_quiet([uv, "pip", "install", "--python", py, "--extra-index-url", TORCH_CUDA[1],
-                   f"torch=={TORCH_CUDA[0]}"], env=dict(os.environ, UV_HTTP_TIMEOUT="300"))
+    p = run_uv(uv, ["pip", "install", "--python", py, "--extra-index-url", TORCH_CUDA[1],
+                    f"torch=={TORCH_CUDA[0]}"], dict(os.environ, UV_HTTP_TIMEOUT="300"))
     r = subprocess.run([str(py), "-c", probe], capture_output=True, text=True, env=child_env())
     if p.returncode == 0 and r.returncode == 0 and r.stdout.split()[-1] == "True":
         say(f"torch {r.stdout.split()[0]}: GPU available")
         return
     say("WARNING  the CUDA build of torch did not work; restoring the CPU build (EEGNet trains on the CPU)")
-    run_quiet([uv, "pip", "install", "--python", py, "--reinstall-package", "torch", "-r", REQ])
+    run_uv(uv, ["pip", "install", "--python", py, "--reinstall-package", "torch", "-r", REQ])
 
 
 def child_env(extra=None):
@@ -426,10 +444,6 @@ def child_env(extra=None):
         env.pop(k, None)
     env.update(PYTHONUTF8="1", PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1", PYTHONNOUSERSITE="1",
                MPLBACKEND="Agg")
-    # Trust Mozilla's roots (certifi) in addition to the system store: Windows adds root CAs only on
-    # demand, so e.g. TU Berlin's HARICA root can be missing. A user-set SSL_CERT_FILE wins.
-    if ca_bundle() and "SSL_CERT_FILE" not in os.environ:
-        env["SSL_CERT_FILE"] = ca_bundle()
     env.update(extra or {})
     return env
 
@@ -680,7 +694,7 @@ def main():
         say(f"sleep prevention: {how or 'not available - keep the machine awake (power settings)'}")
         py = ensure_env()
         ensure_cuda_torch(py)
-        if any(s.name.startswith(NEEDS_NET) for s in todo):
+        if args.setup_only or any(s.name.startswith(NEEDS_NET) for s in todo):
             tls_check(py)
     else:
         py = venv_python()

@@ -23,7 +23,7 @@ That single command downloads the datasets, joins them and runs every stage of `
 
 ### Data
 
-Both datasets are downloaded automatically, only their n-back files, and every file is checked against its CRC-32 in the source archive:
+Both datasets are downloaded automatically, only their n-back files. Every file is checked against its CRC-32 in the source archive and against its SHA-256 in [synthesis/nbackjoin/data_sha256.txt](synthesis/nbackjoin/data_sha256.txt), so the data is byte-identical to the data behind the committed results:
 
 | Dataset | Source | Used by | Size |
 |---|---|---|---|
@@ -42,16 +42,25 @@ Both datasets are downloaded automatically, only their n-back files, and every f
 
 Keep the machine powered and awake. The script blocks idle sleep while it runs (caffeinate on macOS, SetThreadExecutionState on Windows, systemd-inhibit on Linux). A laptop that is closed or runs out of battery will still stop.
 
+### Certificates
+
+A fresh machine can fail to verify a data server's HTTPS certificate. Windows adds root certificates only when its own browser or APIs need them, python.org's macOS Python has none until "Install Certificates" runs, and antivirus or corporate proxies replace certificates with their own. Certificate problems do not stop the run:
+
+- **Downloads** try the operating system's own verifier first (`truststore`, which works like a browser and accepts roots that antivirus or IT installed), then Mozilla's root list (`certifi`).
+- **If neither accepts a data server** (its certificate expired, or a proxy's root is not installed), the downloads continue without TLS verification and print a warning. Every file is still checked against its pinned SHA-256, so a tampered or wrong file is refused.
+- **Package installation** (uv and pip) retries with the system trust store when its bundled roots reject a certificate.
+
+`SSL_CERT_FILE` pointing to a CA bundle is also honoured.
+
 ### Windows notes
 
 - **NVIDIA GPU.** PyPI's Windows PyTorch is CPU-only. When `nvidia-smi` is present and the driver supports CUDA 13.2+, the script swaps in the CUDA build of the same version (`torch 2.15.0+cu132`, about 3 GB) so EEGNet trains on the GPU. If that fails, it keeps the CPU build and carries on.
-- **Certificates.** Windows adds root certificates only when its own browser or APIs need them, so a fresh PC may lack the root behind TU Berlin's server. The pipeline also trusts Mozilla's root list (`certifi`, inside `.venv`). On a network that intercepts HTTPS (a corporate proxy), set `SSL_CERT_FILE` to the proxy's CA bundle.
 - **Use one kind of session.** Start every run either from a normal terminal or from an SSH session, not a mix. `.venv` made from a normal terminal does not start from an administrator SSH session: Windows refuses to follow uv's Python link created at the lower privilege level (`os error 448` / "uv trampoline failed to spawn Python"). Over SSH, which drops the run if the connection drops, start it with a scheduled task or keep the connection alive.
 
 ### What it runs, in order
 
 1. **Preflight.** Checks the platform, free disk, RAM and both download servers.
-2. **Environment.** Creates `.venv/` with Python 3.12 and `requirements.txt`, via [uv](https://docs.astral.sh/uv/), which is installed into `.pipeline/tools/`. Then checks that every package imports, swaps in CUDA PyTorch on Windows with an NVIDIA GPU, and checks verified HTTPS to both data servers.
+2. **Environment.** Creates `.venv/` with Python 3.12 and `requirements.txt`, via [uv](https://docs.astral.sh/uv/), which is installed into `.pipeline/tools/`. Then checks that every package imports, swaps in CUDA PyTorch on Windows with an NVIDIA GPU, and reports which trust store verifies each data server.
 3. **Unit tests** of synthesis, analysis and eeg-load's `loadrepro` (the R-LMD port, BAO and the optimizable classifiers).
 4. **All downloads:** the COG-BCI notebook, Shin, COG-BCI, and the COG-BCI event scan.
 5. **synthesis:** harmonization of both datasets, `nback_features.csv`, the viability checks, and the R-LMD pilot.

@@ -90,14 +90,14 @@ def cog_fetch(subject: int, dest: Path) -> Path:
     """Fetch one subject's n-back .set/.fdt files (18 files) from the v4 archive into
     dest/sub-XX/ses-SY/eeg/. Archives 3-29 nest an extra sub-XX/ folder; 1-2 do not.
 
-    Files appear only after their CRC-32 check, so when all 18 exist nothing is
+    Files appear only after their CRC-32 and SHA-256 checks, so when all 18 exist nothing is
     downloaded and the archive is not opened (no network needed)."""
     root = dest / f"sub-{subject:02d}"
     if all((root / ses / "eeg" / f"{task}{ext}").exists()
            for ses in sources.COG_SESSIONS for task in sources.COG_TASKS for ext in (".set", ".fdt")):
         return root
     url = sources.COG_URL.format(subject)
-    z = open_zip(url)
+    z = open_zip(url, pinned=True)
     members = [i for i in z.infolist()
                if Path(i.filename).stem in sources.COG_TASKS and i.filename.endswith((".set", ".fdt"))]
     assert len(members) == 18, (subject, len(members))

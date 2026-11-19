@@ -1,5 +1,6 @@
-"""Scan n-back event timing for every COG-BCI v4 subject by reading only the .set files
-out of each remote zip with HTTP range requests (the .fdt signal files are skipped)."""
+"""Scan n-back event timing for every COG-BCI v4 subject from its .set files (EEGLAB
+header and events). Reads the copies 01_fetch.py downloaded (and checked) when present,
+otherwise only the .set files out of each remote zip with HTTP range requests."""
 import io
 import json
 import sys
@@ -11,13 +12,31 @@ import mne
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from nbackjoin import sources  # noqa: E402
 from nbackjoin.remote import HTTPRange  # noqa: E402  (range reads with retries)
 
 mne.set_log_level("ERROR")
 REC = "https://zenodo.org/records/7413650/files/sub-{:02d}.zip?download=1"
 
 
+def scan_set(sub, ses, task, p):
+    # the .set holds the EEGLAB header and events; the signal lives in the .fdt
+    ann = mne.read_annotations(p)
+    on, de = np.asarray(ann.onset), np.asarray(ann.description)
+    tr = on[[len(d) == 4 and d[2] == "2" for d in de]]
+    st = on[[len(d) == 4 and d[2:] == "11" for d in de]]
+    return dict(sub=sub, ses=ses, task=task, n_trials=int(len(tr)),
+                soa=round(float(np.median(np.diff(tr))), 3) if len(tr) > 1 else None,
+                n_block_start=int(len(st)), last_trial_s=round(float(tr[-1]), 1) if len(tr) else None,
+                n_boundary=int(sum(d == "boundary" for d in de)),
+                boundary_onsets=[round(float(o), 1) for o, d in zip(on, de) if d == "boundary"],
+                codes=sorted(set(de) - {"boundary"}))
+
+
 def scan(sub):
+    local = sorted((sources.COG_DIR / f"sub-{sub:02d}").glob("ses-S*/eeg/*BACK.set"))
+    if len(local) == 9:
+        return [scan_set(sub, p.parts[-3], p.stem, p) for p in local]
     f = io.BufferedReader(HTTPRange(REC.format(sub)), buffer_size=1 << 20)
     z = zipfile.ZipFile(f)
     out = []
@@ -29,18 +48,8 @@ def scan(sub):
             ses = name.split("/")[-3]
             p = Path(td) / f"{ses}_{Path(name).name}"
             p.write_bytes(z.read(info))
-            # the .set holds the EEGLAB header and events; the signal lives in the skipped .fdt
-            ann = mne.read_annotations(p)
-            on, de = np.asarray(ann.onset), np.asarray(ann.description)
-            tr = on[[len(d) == 4 and d[2] == "2" for d in de]]
-            st = on[[len(d) == 4 and d[2:] == "11" for d in de]]
-            out.append(dict(sub=sub, ses=ses, task=Path(name).stem, n_trials=int(len(tr)),
-                            soa=round(float(np.median(np.diff(tr))), 3) if len(tr) > 1 else None,
-                            n_block_start=int(len(st)), last_trial_s=round(float(tr[-1]), 1) if len(tr) else None,
-                            n_boundary=int(sum(d == "boundary" for d in de)),
-                            boundary_onsets=[round(float(o), 1) for o, d in zip(on, de) if d == "boundary"],
-                            codes=sorted(set(de) - {"boundary"})))
-    return out
+            out.append(scan_set(sub, ses, Path(name).stem, p))
+    return sorted(out, key=lambda r: (r["ses"], r["task"]))
 
 
 if __name__ == "__main__":

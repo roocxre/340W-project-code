@@ -6,22 +6,17 @@ Task codes (COG-BCI_info.pdf): 1 PVT, 2 Flanker, 3 Two-Back, 4 One-Back, 5 Zero-
 """
 import csv
 import sys
-import tempfile
-import urllib.request
 from pathlib import Path
 
 import matio
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from nbackjoin import sources
+from nbackjoin import remote, sources
 
 URL = f"https://zenodo.org/records/{sources.COG_RECORD}/files/notebook.mat?download=1"
 CODE_N = {5: 0, 4: 1, 3: 2}
 
-with tempfile.TemporaryDirectory() as td:
-    p = Path(td) / "notebook.mat"
-    urllib.request.urlretrieve(URL, p)
-    nb = matio.load_from_mat(p)["notebook"]
+nb = matio.load_from_mat(remote.download(URL, sources.COG_DIR / "notebook.mat"))["notebook"]
 
 rows = []
 top = nb.ravel()[0]

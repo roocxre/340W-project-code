@@ -117,7 +117,7 @@ Bands: delta 1–4, theta 4–8, alpha 8–13, beta 13–30, gamma 30–40 Hz. C
 | Stage | Script | What it does |
 |---|---|---|
 | 0 | `00_cogbci_notebook.py` | Exports COG-BCI's `notebook.mat` (a MATLAB table) to [results/cogbci_notebook.csv](results/cogbci_notebook.csv): date, task order, interruptions |
-| 1 | `01_fetch.py` | Range-reads only the n-back files from the source archives and checks every file's CRC-32. Shin: 78 files (2.3 GB) into `eeg-analysis/Cleaned Data/`. COG-BCI: 522 files (9.4 GB compressed) into `data/cogbci/` |
+| 1 | `01_fetch.py` | Range-reads only the n-back files from the source archives and checks every file's CRC-32 and its SHA-256 pinned in `nbackjoin/data_sha256.txt`. Shin: 78 files (2.3 GB) into `eeg-analysis/Cleaned Data/`. COG-BCI: 522 files (9.4 GB compressed) into `data/cogbci/` |
 | 2 | `02_harmonize.py` | Per session: harmonize (below), cut windows, write `cache/windows/<subject>.npz` |
 | 3 | `03_table.py` | Spectral features, notebook metadata, artifact flag → `nback_features.csv`, plus `preprocessing_qa.csv` |
 | 4 | `04_viability.py` | Dimensions, quality, behavior, spectral effects, baselines, dataset identity |
@@ -172,8 +172,8 @@ From a fresh clone, `python run_pipeline.py` at the repository root runs every s
 ```bash
 ../.venv/bin/python -m pytest -q tests
 ../.venv/bin/python scripts/00_cogbci_notebook.py
-../.venv/bin/python scripts/01_fetch.py shin                # 2.3 GB; resumable, CRC-checked
-../.venv/bin/python scripts/01_fetch.py cog --jobs 6        # 9.4 GB; resumable, CRC-checked
+../.venv/bin/python scripts/01_fetch.py shin                # 2.3 GB; resumable, CRC- and SHA-256-checked
+../.venv/bin/python scripts/01_fetch.py cog --jobs 6        # 9.4 GB; resumable, CRC- and SHA-256-checked
 ../.venv/bin/python scripts/02_harmonize.py shin --jobs 6   # ~1.2 GB RAM per worker
 ../.venv/bin/python scripts/02_harmonize.py cog --jobs 4    # ~2.6 GB RAM per worker; ~1 h on 8 cores
 ../.venv/bin/python scripts/03_table.py
