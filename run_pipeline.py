@@ -101,8 +101,18 @@ def fmt_dt(s):
 
 
 # --------------------------------------------------------------------------- machine
-def ram_gb():
+def ram_gb(available=False):
+    """Total physical RAM in GB; with available=True, what a new process can still use right now
+    (Windows: free physical memory and free commit, whichever is smaller; Linux: MemAvailable;
+    None where it cannot be measured)."""
     try:
+        if available and sys.platform.startswith("linux"):
+            for line in open("/proc/meminfo"):
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) / 2 ** 20
+            return None
+        if available and not IS_WIN:
+            return None
         if IS_WIN:
             import ctypes
 
@@ -115,10 +125,12 @@ def ram_gb():
             m = MS()
             m.dwLength = ctypes.sizeof(MS)
             ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m))
+            if available:
+                return min(m.ullAvailPhys, m.ullAvailPageFile) / 2 ** 30
             return m.ullTotalPhys / 2 ** 30
         return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / 2 ** 30
     except Exception:
-        return 8.0
+        return None if available else 8.0
 
 
 class Resources:
@@ -127,8 +139,23 @@ class Resources:
         self.ram = ram_gb()
 
     def jobs(self, gb_per_job):
-        """Parallel workers that fit in RAM (2 GB left for the system)."""
-        return max(1, min(self.cpus, int((self.ram - 2) // gb_per_job)))
+        """Parallel workers that fit in memory: 2 GB of total RAM left for the system, and no more
+        than is available right now, so other programs' memory is respected (see Jobs)."""
+        usable = self.ram - 2
+        avail = ram_gb(available=True)
+        if avail is not None:
+            usable = min(usable, avail - 1)
+        return max(1, min(self.cpus, int(usable // gb_per_job)))
+
+
+class Jobs:
+    """A --jobs value worked out when its stage starts (memory in use changes during a run)."""
+
+    def __init__(self, f):
+        self.f = f
+
+    def __str__(self):
+        return str(self.f())
 
 
 def keep_awake():
@@ -440,7 +467,6 @@ class Stage:
 
 
 def stages(args, res):
-    J = str
     pytest = ["-m", "pytest", "-p", "no:cacheprovider", "tests"]
     S = [
         # unit tests first: an environment problem shows up in minutes, not hours
@@ -462,11 +488,11 @@ def stages(args, res):
               stdout_to="synthesis/results/cogbci_nback_events.jsonl", stdout_check=events_ok),
         # synthesis: harmonize Shin + COG-BCI and build the joined table
         Stage("synthesis:02_harmonize_shin", "synthesis",
-              ["scripts/02_harmonize.py", "shin", "--jobs", J(res.jobs(1.6))],   # peak 1.2 GB/worker
+              ["scripts/02_harmonize.py", "shin", "--jobs", Jobs(lambda: res.jobs(1.6))],   # peak 1.2 GB/worker
               "synthesis/results/log_02_harmonize_shin.txt", 15,
               check=count("synthesis/cache/windows/shin-VP0*.npz", 26)),
         Stage("synthesis:02_harmonize_cog", "synthesis",
-              ["scripts/02_harmonize.py", "cog", "--jobs", J(res.jobs(3.2))],    # peak 2.6 GB/worker
+              ["scripts/02_harmonize.py", "cog", "--jobs", Jobs(lambda: res.jobs(3.2))],    # peak 2.6 GB/worker
               "synthesis/results/log_02_harmonize_cog.txt", 60,
               check=count("synthesis/cache/windows/cog-*.npz", 29)),
         Stage("synthesis:03_table", "synthesis", ["scripts/03_table.py"],
@@ -481,14 +507,14 @@ def stages(args, res):
         Stage("analysis:tests-split", "analysis", pytest + ["-q"],
               ".pipeline/logs/tests_analysis_split.txt", 1),
         Stage("analysis:02_rlmd_features", "analysis",
-              ["scripts/02_rlmd_features.py", "--jobs", J(res.jobs(1))],
+              ["scripts/02_rlmd_features.py", "--jobs", Jobs(lambda: res.jobs(1))],
               "analysis/results/log_02_rlmd_features.txt", 240,
               check=count("analysis/cache/rlmd/*.npz", 55)),
         Stage("analysis:05_models_part1", "analysis",
-              ["scripts/05_models.py", "--models", "lr", "riemann", "svm", "mlp", "--jobs", J(res.jobs(1.5))],
+              ["scripts/05_models.py", "--models", "lr", "riemann", "svm", "mlp", "--jobs", Jobs(lambda: res.jobs(1.5))],
               "analysis/results/log_05_models_part1.txt", 180),
         Stage("analysis:05_models_part2", "analysis",
-              ["scripts/05_models.py", "--models", "rf", "xgb", "--jobs", J(max(1, min(res.cpus // 2, res.jobs(3))))],
+              ["scripts/05_models.py", "--models", "rf", "xgb", "--jobs", Jobs(lambda: max(1, min(res.cpus // 2, res.jobs(3))))],
               "analysis/results/log_05_models_part2.txt", 50),
         Stage("analysis:06_eegnet", "analysis", ["scripts/06_eegnet.py"],
               "analysis/results/log_06_eegnet.txt", 90),
@@ -499,7 +525,7 @@ def stages(args, res):
         for task in ("bin", "shin3", "cog3"):
             S.append(Stage(f"analysis:04_baselines_{task}_{protocol}", "analysis",
                            ["scripts/04_baselines.py", "--task", task, "--protocol", protocol,
-                            "--jobs", J(res.jobs(1.5))],
+                            "--jobs", Jobs(lambda: res.jobs(1.5))],
                            "analysis/results/log_04_baselines.txt", 70, mode="w" if first else "a"))
             first = False
     S.append(Stage("analysis:07_evaluate", "analysis", ["scripts/07_evaluate.py"],
@@ -523,8 +549,9 @@ def save_state(state):
 
 
 def run_stage(st, py, dry):
-    cmd = ([str(py)] if st.interpreter else []) + st.argv
-    say(f"$ (cd {st.cwd}) {' '.join(cmd if not st.interpreter else ['python'] + st.argv)}")
+    argv = [str(a) for a in st.argv]                  # resolves Jobs(...) now, at stage start
+    cmd = ([str(py)] if st.interpreter else []) + argv
+    say(f"$ (cd {st.cwd}) {' '.join(cmd if not st.interpreter else ['python'] + argv)}")
     say(f"  log: {st.log}" + (f"   output: {st.stdout_to}" if st.stdout_to else ""))
     if dry:
         return None
